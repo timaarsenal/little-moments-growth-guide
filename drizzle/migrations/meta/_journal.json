@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795186441007,
+      "tag": "0000_balapan_core",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795186549946,
+      "tag": "0001_milestone_checks",
+      "breakpoints": true
+    }
+  ]
+}
