@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- All UI copy lives in `src/i18n/ru.json` and `src/i18n/kz.json`, read via `useI18n().t`; never hardcode visible strings in components — the app must stay fully bilingual.
+- Signed-in screens live under `src/routes/_authenticated/` and render inside `AppShell` (header with RU/KZ switch, pediatrician disclaimer, bottom nav) so every screen shows the disclaimer.
+- Child profile is one row per parent in `child_profiles` (unique `user_id`), read through `profileQuery` in `src/lib/profile.ts`; screens that need it redirect to `/onboarding` when it is null.
+- Built-in content (`src/data/activities.json`, `src/data/milestones.json`) is bilingual JSON with `ru`/`kz` fields; milestones keep a per-item `source` pointing at CDC "Learn the Signs. Act Early.".
