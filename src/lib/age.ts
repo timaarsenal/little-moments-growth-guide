@@ -20,3 +20,11 @@ export function localTodayISO(now: Date = new Date()): string {
 export function hhmm(time: string): string {
   return time.slice(0, 5);
 }
+
+/** Shift a "YYYY-MM-DD" date by whole days. */
+export function shiftISO(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, d ?? 1));
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}

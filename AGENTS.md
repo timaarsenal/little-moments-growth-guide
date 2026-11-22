@@ -34,3 +34,4 @@ use the editor.
 - Signed-in screens live under `src/routes/_authenticated/` and render inside `AppShell` (header with RU/KZ switch, pediatrician disclaimer, bottom nav) so every screen shows the disclaimer.
 - Child profile is one row per parent in `child_profiles` (unique `user_id`), read through `profileQuery` in `src/lib/profile.ts`; screens that need it redirect to `/onboarding` when it is null.
 - Built-in content (`src/data/activities.json`, `src/data/milestones.json`) is bilingual JSON with `ru`/`kz` fields; milestones keep a per-item `source` pointing at CDC "Learn the Signs. Act Early.".
+- Day planning is pure and tested: `src/lib/schedule.ts` turns the profile into nap-safe slots, `src/lib/library.ts` fills them; today's own marks are excluded from picking so the plan stays stable during the day.
