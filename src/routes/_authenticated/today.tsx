@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
-import { BookOpen } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { BookOpen, Loader2, Sparkles } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
@@ -12,9 +13,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
 import { pickFromLibrary } from "@/lib/library";
 import { logsQuery } from "@/lib/logs";
+import { getTodayPlan } from "@/lib/plan.functions";
 import { profileQuery } from "@/lib/profile";
 import { isWeekendDate, planSlots } from "@/lib/schedule";
-import type { LogLite, PlannedActivity, Reaction } from "@/lib/types";
+import { localize, type DayPlan, type LogLite, type PlannedActivity, type Reaction } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/today")({
   head: () => ({
@@ -54,11 +56,24 @@ function Today() {
     [logs, today],
   );
 
-  const plan = useMemo(() => {
-    if (!profile) return [];
-    const slots = planSlots(profile, isWeekendDate(today));
-    return pickFromLibrary(slots, history, lang, `${user.id}:${today}`);
-  }, [profile, history, lang, today, user.id]);
+  const fetchPlan = useServerFn(getTodayPlan);
+  const planQuery = useQuery({
+    queryKey: ["plan", user.id, today],
+    queryFn: async (): Promise<DayPlan> => {
+      try {
+        return await fetchPlan({ data: { today } });
+      } catch (err) {
+        // Server unreachable: build the day from the built-in library right here.
+        console.error("[today] plan request failed, using library", err);
+        const slots = profile ? planSlots(profile, isWeekendDate(today)) : [];
+        return { source: "library", items: pickFromLibrary(slots, history, `${user.id}:${today}`) };
+      }
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+  const source = planQuery.data?.source ?? "library";
+  const plan = useMemo(() => (planQuery.data?.items ?? []).map((item) => localize(item, lang)), [planQuery.data, lang]);
 
   const mark = useMutation({
     mutationFn: async ({ activity, status, reaction }: MarkInput) => {
@@ -126,7 +141,12 @@ function Today() {
         </div>
       </div>
 
-      {plan.length === 0 ? (
+      {planQuery.isPending ? (
+        <div className="mt-6 flex flex-col items-center gap-3 rounded-3xl bg-card p-8 text-center shadow-soft" role="status">
+          <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
+          <p className="font-semibold text-muted-foreground">{t("today.loading")}</p>
+        </div>
+      ) : plan.length === 0 ? (
         <div className="mt-6 rounded-3xl border-2 border-dashed border-border p-6 text-center">
           <p className="font-semibold text-muted-foreground">{t("today.empty")}</p>
           <Button asChild variant="soft" className="mt-4">
@@ -138,8 +158,12 @@ function Today() {
           <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
             <p className="font-bold">{t("today.plannedFor")}</p>
             <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">
-              <BookOpen className="size-3.5" aria-hidden />
-              {t("today.library")}
+              {source === "ai" ? (
+                <Sparkles className="size-3.5" aria-hidden />
+              ) : (
+                <BookOpen className="size-3.5" aria-hidden />
+              )}
+              {t(source === "ai" ? "today.ai" : "today.library")}
             </span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted" aria-hidden>

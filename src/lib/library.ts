@@ -1,14 +1,7 @@
 import raw from "@/data/activities.json";
 
 import type { Slot } from "./schedule";
-import { isCategory, type Category, type Lang, type LogLite, type PlannedActivity } from "./types";
-
-interface LocalizedText {
-  title: string;
-  why: string;
-  steps: string[];
-  materials: string[];
-}
+import { isCategory, type Category, type LocalizedText, type LogLite, type PlanItem } from "./types";
 
 export interface LibraryActivity {
   id: string;
@@ -42,13 +35,14 @@ const REACTION_WEIGHT: Record<string, number> = { liked: 2, ok: 0.5, disliked: -
  * Fill each slot with one library activity: categories differ when possible, duration fits the slot,
  * categories and activities the child liked rank higher, disliked ones lower.
  * `history` must exclude today's marks so the plan stays stable during the day.
+ * `takenCategories` are already used by other cards of the day (e.g. AI ones) and are avoided when possible.
  */
 export function pickFromLibrary(
   slots: Slot[],
   history: LogLite[],
-  lang: Lang,
   seed: string,
-): PlannedActivity[] {
+  takenCategories: Category[] = [],
+): PlanItem[] {
   const catScore = new Map<string, number>();
   const idScore = new Map<string, number>();
   for (const log of history) {
@@ -59,8 +53,8 @@ export function pickFromLibrary(
   }
 
   const usedIds = new Set<string>();
-  const usedCats = new Set<Category>();
-  const result: PlannedActivity[] = [];
+  const usedCats = new Set<Category>(takenCategories);
+  const result: PlanItem[] = [];
 
   for (const slot of slots) {
     const unused = LIBRARY.filter((a) => !usedIds.has(a.id));
@@ -86,17 +80,14 @@ export function pickFromLibrary(
 
     usedIds.add(best.id);
     usedCats.add(best.category);
-    const text = best[lang];
     result.push({
       key: libraryKey(best.id),
-      title: text.title,
       category: best.category,
       duration_min: Math.min(best.duration_min, slot.max_minutes),
-      why: text.why,
-      steps: text.steps,
-      materials: text.materials,
       window: slot.window,
       start_time: slot.start_time,
+      ru: best.ru,
+      kz: best.kz,
     });
   }
 

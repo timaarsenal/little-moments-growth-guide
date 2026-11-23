@@ -29,24 +29,24 @@ describe("library picks", () => {
   });
 
   it("uses different categories for the day's cards", () => {
-    const plan = pickFromLibrary(slots, [], "ru", "seed");
+    const plan = pickFromLibrary(slots, [], "seed");
     expect(new Set(plan.map((a) => a.category)).size).toBe(plan.length);
   });
 
   it("fits each activity into its slot", () => {
-    const plan = pickFromLibrary(slots, [], "kz", "seed");
+    const plan = pickFromLibrary(slots, [], "seed");
     plan.forEach((a, i) => expect(a.duration_min).toBeLessThanOrEqual(slots[i]?.max_minutes ?? 0));
   });
 
   it("prefers a category the child liked", () => {
     const history = [log("fine_motor", "liked"), log("fine_motor", "liked"), log("fine_motor", "liked")];
-    const plan = pickFromLibrary([slots[2]!], history, "ru", "seed");
+    const plan = pickFromLibrary([slots[2]!], history, "seed");
     expect(plan[0]?.category).toBe("fine_motor");
   });
 
   it("avoids a category the child disliked", () => {
     const history = [log("speech", "disliked"), log("speech", "disliked"), log("speech", "disliked")];
-    const plan = pickFromLibrary(slots, history, "ru", "seed");
+    const plan = pickFromLibrary(slots, history, "seed");
     expect(plan.some((a) => a.category === "speech")).toBe(false);
   });
 });

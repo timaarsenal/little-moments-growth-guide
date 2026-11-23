@@ -94,6 +94,9 @@ function Onboarding() {
         { onConflict: "user_id" },
       );
       if (dbError) throw dbError;
+      // The schedule may have changed: drop today's stored plan so it is picked again.
+      await supabase.from("daily_plans").delete().eq("user_id", auth.user.id).eq("plan_date", localTodayISO());
+      queryClient.removeQueries({ queryKey: ["plan"] });
       await queryClient.invalidateQueries({ queryKey: profileQuery.queryKey });
       toast.success(t("onboarding.saved"));
       await navigate({ to: "/today" });
