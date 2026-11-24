@@ -53,6 +53,39 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          activity_key: string | null
+          activity_title: string | null
+          content: string
+          created_at: string
+          id: string
+          role: string
+          show_help: boolean
+          user_id: string
+        }
+        Insert: {
+          activity_key?: string | null
+          activity_title?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          show_help?: boolean
+          user_id: string
+        }
+        Update: {
+          activity_key?: string | null
+          activity_title?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          show_help?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       child_profiles: {
         Row: {
           bed_time: string
@@ -61,6 +94,7 @@ export type Database = {
           created_at: string
           evening_minutes: number
           id: string
+          interests: string
           morning_minutes: number
           nap_end: string
           nap_start: string
@@ -76,6 +110,7 @@ export type Database = {
           created_at?: string
           evening_minutes?: number
           id?: string
+          interests?: string
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
@@ -91,6 +126,7 @@ export type Database = {
           created_at?: string
           evening_minutes?: number
           id?: string
+          interests?: string
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
@@ -148,6 +184,30 @@ export type Database = {
           created_at?: string
           id?: string
           milestone_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      parent_moods: {
+        Row: {
+          created_at: string
+          id: string
+          mood: string
+          mood_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood: string
+          mood_date: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood?: string
+          mood_date?: string
           user_id?: string
         }
         Relationships: []

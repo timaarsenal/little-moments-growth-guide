@@ -15,6 +15,13 @@
       "when": 1795186549946,
       "tag": "0001_milestone_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795492795947,
+      "tag": "0002_assistant_chat_and_moods",
+      "breakpoints": true
     }
   ]
 }

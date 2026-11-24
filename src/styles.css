@@ -58,6 +58,9 @@
   --color-cat-emotions: var(--cat-emotions);
   --color-cat-emotions-foreground: var(--cat-emotions-foreground);
 
+  --color-chat-user: var(--chat-user);
+  --color-chat-user-foreground: var(--chat-user-foreground);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -112,6 +115,9 @@
   --cat-creative-foreground: oklch(0.52 0.14 15);
   --cat-emotions: oklch(0.94 0.07 95);
   --cat-emotions-foreground: oklch(0.5 0.1 80);
+
+  --chat-user: oklch(0.45 0.08 45);
+  --chat-user-foreground: oklch(0.985 0.012 85);
 
   --chart-1: var(--cat-speech-foreground);
   --chart-2: var(--cat-gross-foreground);
