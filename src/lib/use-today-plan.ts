@@ -22,6 +22,8 @@ export function useTodayPlan(userId: string, today: string, profile: ChildProfil
         return { source: "library", items: ensureKazakh(pickFromLibrary(slots, history, `${userId}:${today}`), Boolean(profile?.bilingual), `${userId}:${today}`) };
       }
     },
+    // Bilingual families always see one Kazakh activity, even on a plan stored before the setting was on.
+    select: (plan: DayPlan) => ({ ...plan, items: ensureKazakh(plan.items, Boolean(profile?.bilingual), `${userId}:${today}`) }),
     staleTime: Infinity,
     retry: false,
   });

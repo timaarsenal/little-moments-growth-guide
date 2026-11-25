@@ -9,6 +9,7 @@ import { readStoredPlan } from "./ai-plan";
 import { CHAT_COLUMNS, CHAT_MODEL_HISTORY, toChatMessage, type ChatStreamEvent } from "./chat";
 import type { ChatInput } from "./chat-input";
 import { mentionsCrisis } from "./crisis";
+import { ensureKazakh } from "./kazakh-fallback";
 import { lightenPlan } from "./light-plan";
 
 const AI_TIMEOUT_MS = 45_000;
@@ -72,7 +73,7 @@ export async function streamAssistant(data: ChatInput, context: { supabase: Supa
     if (threadError || !thread) throw new Error("Unknown chat thread");
 
     const [profileRes, planRes, logsRes, moodRes, historyRes] = await Promise.all([
-      supabase.from("child_profiles").select("birth_date, interests").maybeSingle(),
+      supabase.from("child_profiles").select("birth_date, interests, bilingual").maybeSingle(),
       supabase.from("daily_plans").select("source, activities").eq("plan_date", today).eq("language", "both").maybeSingle(),
       supabase.from("activity_logs").select("activity_key, title, status, reaction").eq("plan_date", today),
       supabase.from("parent_moods").select("mood").eq("mood_date", today).maybeSingle(),
@@ -103,7 +104,8 @@ export async function streamAssistant(data: ChatInput, context: { supabase: Supa
     if (userError) throw userError;
 
     emit({ type: "user", message: toChatMessage(userRow) });
-    const plan = planRes.data ? readStoredPlan(planRes.data.source, planRes.data.activities) : null;
+    const stored = planRes.data ? readStoredPlan(planRes.data.source, planRes.data.activities) : null;
+    const plan = stored ? { ...stored, items: ensureKazakh(stored.items, Boolean(profileRes.data?.bilingual), `${userId}:${today}`) } : null;
     const logs = new Map((logsRes.data ?? []).map((l) => [l.activity_key, l]));
     const contextJson = JSON.stringify({
       child: profileRes.data
