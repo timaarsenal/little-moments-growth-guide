@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, Plus, Trash2, Moon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/balapan/AppShell";
+import { BedtimeRitual } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,10 +68,11 @@ function Rituals() {
       ) : (
         <ul className="mt-2 space-y-2">
           {rituals.map((r) => (
-            <li key={r.id} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
+            <li key={r.id} className="flex items-center gap-3 rounded-3xl bg-sleep p-4">
+              {r.anchor === "bed" ? <BedtimeRitual className="h-10 w-11 shrink-0" /> : <Moon className="size-6 shrink-0 text-sleep-foreground" aria-hidden />}
               <div className="min-w-0 flex-1">
-                <p className="font-bold">{ritualTitle(r, t)}</p>
-                <p className="text-sm text-muted-foreground">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""} · {t("today.min", { n: r.minutes })}</p>
+                <p className="font-extrabold text-sleep-foreground">{ritualTitle(r, t)}</p>
+                <p className="text-sm text-sleep-foreground/80">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""} · {t("today.min", { n: r.minutes })}</p>
               </div>
               <Button size="icon" variant="ghost" aria-label={t("rituals.delete")} onClick={() => remove.mutate(r.id)} disabled={remove.isPending}>
                 <Trash2 aria-hidden />
@@ -85,7 +87,7 @@ function Rituals() {
         {RITUAL_TEMPLATES.map((tpl) => {
           const added = rituals.some((r) => r.template_key === tpl.key);
           return (
-            <li key={tpl.key} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
+            <li key={tpl.key} className="flex items-center gap-3 rounded-3xl border border-border bg-card p-4">
               <div className="min-w-0 flex-1">
                 <p className="font-bold">{t(`rituals.t.${tpl.key}`)}</p>
                 <p className="text-sm text-muted-foreground">{t(`rituals.anchors.${tpl.anchor}`)} · {t("today.min", { n: tpl.minutes })}</p>
@@ -101,7 +103,7 @@ function Rituals() {
       </ul>
 
       <form
-        className="mt-6 space-y-3 rounded-3xl bg-card p-5 shadow-soft"
+        className="mt-6 space-y-3 rounded-3xl border border-border bg-card p-5"
         onSubmit={(e) => {
           e.preventDefault();
           if (!title.trim()) return;

@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronRight, Loader2, MessageCircleHeart, Plus } from "lucide-react";
+import { ChevronRight, Loader2, Plus } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/balapan/AppShell";
 import { Button } from "@/components/ui/button";
+import { Chick } from "@/components/illustrations";
 import { useI18n } from "@/i18n";
 import { localTodayISO } from "@/lib/age";
 import { createChatThread, threadsQuery } from "@/lib/chat";
@@ -86,7 +87,7 @@ function Threads() {
       <p className="mt-6 font-bold">{t("assistant.chats")}</p>
       {threads.length === 0 ? (
         <div className="mt-3 rounded-3xl border-2 border-dashed border-border p-6 text-center">
-          <MessageCircleHeart className="mx-auto size-10 text-primary" aria-hidden />
+          <Chick className="mx-auto size-16" />
           <p className="mt-2 font-semibold text-muted-foreground">{t("assistant.noChats")}</p>
         </div>
       ) : (
@@ -94,7 +95,7 @@ function Threads() {
           {threads.map((th) => (
             <li key={th.id}>
               <Link to="/assistant/$threadId" params={{ threadId: th.id }} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
-                <MessageCircleHeart className="size-6 shrink-0 text-primary" aria-hidden />
+                <Chick className="size-9 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold">{th.title || t("assistant.untitled")}</p>
                   <p className="text-xs text-muted-foreground">{new Date(th.created_at).toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU")}</p>

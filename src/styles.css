@@ -70,6 +70,11 @@
   --color-cat-emotions: var(--cat-emotions);
   --color-cat-emotions-foreground: var(--cat-emotions-foreground);
 
+  --color-bar-speech: var(--bar-speech);
+  --color-bar-gross: var(--bar-gross);
+  --color-bar-fine: var(--bar-fine);
+  --color-bar-creative: var(--bar-creative);
+  --color-bar-emotions: var(--bar-emotions);
   --color-chat-user: var(--chat-user);
   --color-chat-user-foreground: var(--chat-user-foreground);
 
@@ -136,6 +141,12 @@
   --cat-emotions: #F7F0D8;
   --cat-emotions-foreground: #7A5F1C;
 
+  --bar-speech: #9DB8D9;
+  --bar-gross: #7FA88C;
+  --bar-fine: #E59A7A;
+  --bar-creative: #E6A6B5;
+  --bar-emotions: #F5C66B;
+
   --chat-user: #4F7A63;
   --chat-user-foreground: #FFFFFF;
 
@@ -145,11 +156,11 @@
   --steppe-near: #7FA58C;
   --steppe-sun: #F3C9A6;
 
-  --chart-1: var(--cat-speech-foreground);
-  --chart-2: var(--cat-gross-foreground);
-  --chart-3: var(--cat-fine-foreground);
-  --chart-4: var(--cat-creative-foreground);
-  --chart-5: var(--cat-emotions-foreground);
+  --chart-1: var(--bar-speech);
+  --chart-2: var(--bar-gross);
+  --chart-3: var(--bar-fine);
+  --chart-4: var(--bar-creative);
+  --chart-5: var(--bar-emotions);
   --sidebar: var(--card);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
