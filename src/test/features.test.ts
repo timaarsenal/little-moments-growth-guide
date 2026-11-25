@@ -113,3 +113,14 @@ describe("AI plan: interests and Kazakh activities", () => {
     expect(kazakhWordsLearned(plans, [{ plan_date: "2026-11-24", activity_key: "k", status: "skipped" }])).toEqual([]);
   });
 });
+
+import { extraInterestsFor } from "@/lib/types";
+describe("extra interests by age", () => {
+  it("offers age-specific ideas", () => {
+    expect(extraInterestsFor(3)).toContain("rattles");
+    expect(extraInterestsFor(9)).toContain("peekaboo");
+    expect(extraInterestsFor(18)).toContain("pushcars");
+    expect(extraInterestsFor(26)).toContain("drawing");
+    expect(extraInterestsFor(26)).not.toContain("rattles");
+  });
+});

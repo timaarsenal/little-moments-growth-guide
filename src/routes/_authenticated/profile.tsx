@@ -15,7 +15,7 @@ import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
 import { parseNaps } from "@/lib/sleep";
-import { INTEREST_TAGS } from "@/lib/types";
+import { BASE_INTERESTS, extraInterestsFor } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { profileQuery } from "@/lib/profile";
 import { replanToday } from "@/lib/replan";
@@ -85,6 +85,15 @@ function Profile() {
     setNotify(true);
   }
 
+  const [showMore, setShowMore] = useState(false);
+  const months = profile ? ageInMonths(profile.birth_date, localTodayISO()) : 0;
+  const extras = extraInterestsFor(months);
+  const allBase = !!profile && BASE_INTERESTS.every((x) => profile.interest_tags.includes(x));
+  const moreOpen = showMore || allBase;
+  const visibleTags = profile
+    ? [...new Set<string>([...BASE_INTERESTS, ...(moreOpen ? extras : []), ...profile.interest_tags])]
+    : [];
+
   const min = (n: number) => (n === 0 ? t("onboarding.none") : t("common.minutes", { n }));
 
   return (
@@ -108,7 +117,7 @@ function Profile() {
             <h3 id="interests" className="mt-4 scroll-mt-20 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
             <p className="text-xs text-muted-foreground">{t("profile.interestsHint")}</p>
             <ul className="mt-2 flex flex-wrap gap-2">
-              {INTEREST_TAGS.map((tag) => {
+              {visibleTags.map((tag) => {
                 const on = profile.interest_tags.includes(tag);
                 return (
                   <li key={tag}>
@@ -122,6 +131,12 @@ function Profile() {
               })}
               {profile.interests && <li className="flex min-h-11 items-center break-words rounded-full bg-muted px-4 text-sm font-bold">{profile.interests}</li>}
             </ul>
+            {!allBase && (
+              <button type="button" onClick={() => setShowMore((v) => !v)} className="mt-3 min-h-11 rounded-full px-2 text-sm font-extrabold text-primary">
+                {moreOpen ? t("interests.less") : `+ ${t("interests.more")}`}
+              </button>
+            )}
+            {moreOpen && <p className="mt-1 text-xs text-muted-foreground">{t("interests.moreHint")}</p>}
           </section>
 
           <WeeklyNotifier months={ageInMonths(profile.birth_date, localTodayISO())} name={profile.child_name} />

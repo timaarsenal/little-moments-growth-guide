@@ -17,7 +17,7 @@ import { profileQuery } from "@/lib/profile";
 import { replanToday } from "@/lib/replan";
 import { toMinutes } from "@/lib/schedule";
 import { MAX_NAPS, defaultNaps, napRange, parseNaps, type Nap } from "@/lib/sleep";
-import { INTEREST_TAGS } from "@/lib/types";
+import { BASE_INTERESTS, INTEREST_TAGS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -170,7 +170,7 @@ function Onboarding() {
             <fieldset className="space-y-2">
               <legend className="text-base font-bold">{t("onboarding.interests")}</legend>
               <div className="flex flex-wrap gap-2">
-                {INTEREST_TAGS.map((tag) => {
+                {BASE_INTERESTS.map((tag) => {
                   const on = tags.includes(tag);
                   return (
                     <button

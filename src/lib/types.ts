@@ -49,7 +49,18 @@ export interface LocalizedText {
 }
 
 /** One planned activity with both languages, so switching RU/KZ never changes the day's plan. */
-export const INTEREST_TAGS = ["cars", "animals", "music", "ball", "books", "water", "blocks", "dolls"] as const;
+export const BASE_INTERESTS = ["cars", "animals", "music", "ball", "books", "water", "blocks", "dolls"] as const;
+/** Extra interest ideas per age band (months, upper bound exclusive), offered in the profile as "more options". */
+export const EXTRA_INTERESTS = [
+  { maxMonths: 6, tags: ["faces", "rattles", "songs", "contrast", "tummy", "massage"] },
+  { maxMonths: 12, tags: ["peekaboo", "crawling", "pyramids", "clapping", "bathing", "rustling"] },
+  { maxMonths: 24, tags: ["pushcars", "pouring", "climbing", "fingerplay", "dancing", "hideseek"] },
+  { maxMonths: Infinity, tags: ["drawing", "modeling", "gymnastics", "household", "roleplay", "sand", "puzzles", "scooter", "nature", "stickers"] },
+] as const;
+export const INTEREST_TAGS = [...BASE_INTERESTS, ...EXTRA_INTERESTS.flatMap((b) => b.tags)] as const;
+export function extraInterestsFor(months: number): readonly string[] {
+  return (EXTRA_INTERESTS.find((b) => months < b.maxMonths) ?? EXTRA_INTERESTS[EXTRA_INTERESTS.length - 1]!).tags;
+}
 export type InterestTag = (typeof INTEREST_TAGS)[number];
 
 export interface KazakhWord {
