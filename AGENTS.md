@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Project rules
+- Assistant conversations use owner-scoped chat_threads and thread_id on chat_messages; the streaming helper is server-only, so histories and secrets cannot leak across chats or into the browser.
 - All UI copy lives in `src/i18n/ru.json` and `src/i18n/kz.json`, read via `useI18n().t`; never hardcode visible strings in components — the app must stay fully bilingual.
 - Signed-in screens live under `src/routes/_authenticated/` and render inside `AppShell` (header with RU/KZ switch, pediatrician disclaimer, bottom nav) so every screen shows the disclaimer.
 - Child profile is one row per parent in `child_profiles` (unique `user_id`), read through `profileQuery` in `src/lib/profile.ts`; screens that need it redirect to `/onboarding` when it is null.

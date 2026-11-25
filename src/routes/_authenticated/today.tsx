@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { BookOpen, Loader2, Sparkles } from "lucide-react";
 import { useMemo } from "react";
@@ -42,6 +42,7 @@ type MarkInput =
   | { activity: PlannedActivity; status: null; reaction: null };
 
 function Today() {
+  const navigate = useNavigate();
   const { t, age, lang } = useI18n();
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
@@ -187,6 +188,7 @@ function Today() {
                 onSkip={() => mark.mutate({ activity, status: "skipped", reaction: null })}
                 onReact={(reaction) => mark.mutate({ activity, status: "done", reaction })}
                 onUndo={() => mark.mutate({ activity, status: null, reaction: null })}
+                onDiscuss={() => { void navigate({ to: "/assistant", search: { activity: activity.key } }); }}
               />
             ))}
           </div>
