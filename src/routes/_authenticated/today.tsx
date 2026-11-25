@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { ActivityCard } from "@/components/balapan/ActivityCard";
+import { WeeklyNotifier } from "@/components/balapan/WeeklyNotifier";
 import { AppShell } from "@/components/balapan/AppShell";
 import { MoodFace } from "@/components/balapan/Illustrations";
 import { BedtimeRitual, Hero } from "@/components/illustrations";
@@ -224,6 +225,7 @@ function Today() {
 
   return (
     <AppShell>
+      <WeeklyNotifier months={months} name={profile.child_name} />
       <section className="relative -mx-5 -mt-2 h-56 overflow-hidden">
         <Hero preserve="xMidYMax slice" className="absolute inset-0 size-full" />
         <div className="relative flex items-start justify-between gap-3 px-5 pt-4">

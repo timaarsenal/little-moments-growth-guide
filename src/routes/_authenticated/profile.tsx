@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Images, LogOut, Pencil, Repeat } from "lucide-react";
 
 import { AppShell } from "@/components/balapan/AppShell";
+import { NOTIFY_PREF, WeeklyNotifier } from "@/components/balapan/WeeklyNotifier";
 import { LangSwitch } from "@/components/balapan/LangSwitch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -69,6 +71,20 @@ function Profile() {
     await navigate({ to: "/auth", search: { mode: "signin" }, replace: true });
   }
 
+  const [notify, setNotify] = useState(false);
+  useEffect(() => {
+    setNotify(typeof Notification !== "undefined" && Notification.permission === "granted" && localStorage.getItem(NOTIFY_PREF) === "on");
+  }, []);
+  async function toggleNotify(on: boolean) {
+    if (!on) { localStorage.setItem(NOTIFY_PREF, "off"); setNotify(false); return; }
+    if (typeof Notification === "undefined") return toast.error(t("weekly.notifyDenied"));
+    if (window.top !== window.self) return toast.error(t("weekly.notifyFrame"));
+    const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
+    if (perm !== "granted") return toast.error(t("weekly.notifyDenied"));
+    localStorage.setItem(NOTIFY_PREF, "on");
+    setNotify(true);
+  }
+
   const min = (n: number) => (n === 0 ? t("onboarding.none") : t("common.minutes", { n }));
 
   return (
@@ -85,6 +101,10 @@ function Profile() {
             <p className="text-muted-foreground">
               {age(ageInMonths(profile.birth_date, localTodayISO()))}
             </p>
+            <div className="mt-4 rounded-2xl bg-accent p-4">
+              <p className="font-extrabold text-accent-foreground">{t("weekly.newInterests")}</p>
+              <p className="text-xs text-accent-foreground">{t("weekly.newInterestsHint")}</p>
+            </div>
             <h3 id="interests" className="mt-4 scroll-mt-20 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
             <p className="text-xs text-muted-foreground">{t("profile.interestsHint")}</p>
             <ul className="mt-2 flex flex-wrap gap-2">
@@ -102,6 +122,17 @@ function Profile() {
               })}
               {profile.interests && <li className="flex min-h-11 items-center break-words rounded-full bg-muted px-4 text-sm font-bold">{profile.interests}</li>}
             </ul>
+          </section>
+
+          <WeeklyNotifier months={ageInMonths(profile.birth_date, localTodayISO())} name={profile.child_name} />
+          <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <Label htmlFor="weekly-notify" className="text-base font-bold">{t("weekly.notify")}</Label>
+                <p className="text-sm text-muted-foreground">{t("weekly.notifyHint")}</p>
+              </div>
+              <Switch id="weekly-notify" checked={notify} onCheckedChange={(v) => void toggleNotify(v)} />
+            </div>
           </section>
 
           <section className="mt-4 space-y-4 rounded-3xl bg-card p-5 shadow-soft">
