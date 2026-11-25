@@ -6,6 +6,7 @@ import { useI18n } from "@/i18n";
 import { CATEGORY_STYLE } from "@/lib/categories";
 import type { LogLite, PlannedActivity, Reaction } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { CategoryArt } from "./Illustrations";
 
 const REACTIONS: { value: Reaction; emoji: string; labelKey: string }[] = [
   { value: "liked", emoji: "😊", labelKey: "today.liked" },
@@ -28,9 +29,11 @@ interface Props {
   customInterest?: string;
   /** Extra controls shown after "Done" (e.g. save a moment). */
   doneExtra?: ReactNode;
+  /** The next activity to do: shown larger with a wide picture. */
+  next?: boolean;
 }
 
-export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss, weatherNote, doneExtra, customInterest }: Props) {
+export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss, weatherNote, doneExtra, customInterest, next = false }: Props) {
   const { t, lang } = useI18n();
   const [open, setOpen] = useState(false);
   const style = CATEGORY_STYLE[activity.category];
@@ -39,30 +42,41 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
   return (
     <article
       className={cn(
-        "rounded-3xl bg-card p-5 shadow-soft transition-opacity animate-pop-in",
+        "overflow-hidden rounded-3xl border bg-card transition-opacity animate-pop-in",
+        next ? "border-2 border-warm" : "border-border",
         status === "skipped" && "opacity-60",
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold", style.chip)}>
-          <style.Icon className="size-4" aria-hidden />
-          {t(`categories.${activity.category}`)}
+      {next && <CategoryArt category={activity.category} wide />}
+      <div className="p-5">
+      {next && (
+        <span className="mb-3 inline-flex items-center rounded-full bg-warm-soft px-3 py-1 text-xs font-extrabold text-warm-foreground">
+          {t("today.next")} · {activity.start_time}
         </span>
-        <span className="inline-flex items-center gap-1 text-sm font-bold text-muted-foreground">
-          <Clock className="size-4" aria-hidden />
-          {t("today.min", { n: activity.duration_min })}
-        </span>
+      )}
+      <div className="flex gap-3">
+        {!next && <CategoryArt category={activity.category} />}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-muted-foreground">
+            {!next && <span>{activity.start_time}</span>}
+            <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5", style.chip)}>
+              <style.Icon className="size-3.5" aria-hidden />
+              {t(`categories.${activity.category}`)}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Clock className="size-3.5" aria-hidden />
+              {t("today.min", { n: activity.duration_min })}
+            </span>
+          </div>
+          <p className="mt-1 text-xs font-bold text-muted-foreground">{t(`windows.${activity.window}`)}</p>
+          <h2 className={cn("mt-1 font-extrabold leading-snug", next ? "text-xl" : "text-lg", status === "done" && "line-through decoration-2 opacity-70")}>{activity.title}</h2>
+        </div>
       </div>
-
-      <p className="mt-3 text-sm font-bold text-primary">
-        {t(`windows.${activity.window}`)} · {activity.start_time}
-      </p>
-      <h2 className="mt-1 text-xl font-bold leading-snug">{activity.title}</h2>
       {(activity.kazakh || activity.interests?.length || (activity.movedIndoors && weatherNote)) && (
         <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold">
-          {activity.kazakh && <span className="rounded-full bg-accent px-2.5 py-1 text-accent-foreground">{t("kazakh.badge")}</span>}
+          {activity.kazakh && <span className="rounded-full bg-warm-soft px-2.5 py-1 text-warm-foreground">{t("kazakh.badge")}</span>}
           {activity.interests?.length ? (
-            <span className="rounded-full bg-primary-soft px-2.5 py-1 text-primary">
+            <span className="rounded-full bg-primary-soft px-2.5 py-1 text-primary-dark">
               {t("interestBadge", { list: activity.interests.map((i) => (i === "custom" ? customInterest || t("interests.other") : t(`interests.${i}`)).toLowerCase()).join(", ") })}
             </span>
           ) : null}
@@ -196,6 +210,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         <MessageCircleHeart aria-hidden />
         {t("today.discuss")}
       </Button>
+      </div>
     </article>
   );
 }

@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BookOpen, Check, CloudSun, Loader2, Sparkles } from "lucide-react";
+import { Bath, BookOpen, Car, Check, CloudSun, CookingPot, House, Loader2, Moon, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { ActivityCard } from "@/components/balapan/ActivityCard";
 import { AppShell } from "@/components/balapan/AppShell";
+import { MoodFace, SteppeArt } from "@/components/balapan/Illustrations";
 import { MomentButton } from "@/components/balapan/MomentButton";
 import { WeeklySummary } from "@/components/balapan/WeeklySummary";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,13 @@ export const Route = createFileRoute("/_authenticated/today")({
   component: Today,
 });
 
-const MOOD_EMOJI: Record<Mood, string> = { good: "😊", ok: "😐", tired: "😩" };
+const PLACES = [
+  { id: "home", Icon: House },
+  { id: "kitchen", Icon: CookingPot },
+  { id: "car", Icon: Car },
+  { id: "bath", Icon: Bath },
+] as const;
+type Place = (typeof PLACES)[number]["id"];
 
 type MarkInput =
   | { activity: PlannedActivity; status: "done" | "skipped"; reaction: Reaction | null }
@@ -121,6 +128,7 @@ function Today() {
   });
   const isSunday = new Date(`${today}T12:00:00`).getDay() === 0;
   const { data: stats } = useQuery(statsQuery(user.id, today));
+  const [place, setPlace] = useState<Place | null>(null);
   const [woke, setWoke] = useState<{ left: number; items: InfantActivity[] } | null>(null);
   const weekMinutes = stats ? (weekTotals(stats.logs, checks, today, 1)[0] ?? 0) : 0;
 
@@ -210,31 +218,41 @@ function Today() {
     today,
   );
   const showWoke = months < INFANT_MAX_MONTHS;
+  const dateLabel = new Date(`${today}T12:00:00`).toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU", { weekday: "long", day: "numeric", month: "long" });
+  const nextKey = plan.find((a) => !todayLogs.get(a.key))?.key;
 
   return (
     <AppShell>
-      <div className="mt-2 flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-bold">{t("today.greeting")}</h1>
-        <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-bold shadow-soft" aria-label={t("weather.label")}>
-          <CloudSun className="size-4 text-primary" aria-hidden />
-          {weatherQ.data ? (
-            <span>{formatTemp(weatherQ.data.now)} · {t(`cities.${city}`)}</span>
-          ) : weatherQ.isError ? (
-            <span className="text-muted-foreground">{t("weather.unavailable")}</span>
-          ) : (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-          )}
+      <section className="relative -mx-5 -mt-2 h-56 overflow-hidden">
+        <SteppeArt className="absolute inset-0 size-full" />
+        <div className="relative flex items-start justify-between gap-3 px-5 pt-4">
+          <div className="min-w-0">
+            <p className="text-sm font-bold capitalize text-primary-dark">{dateLabel}</p>
+            <h1 className="mt-0.5 truncate text-3xl font-extrabold">{t("today.title", { name: profile.child_name })}</h1>
+            <p className="text-sm font-semibold text-muted-foreground">{age(months)}</p>
+          </div>
+          <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-extrabold" aria-label={t("weather.label")}>
+            <CloudSun className="size-4 text-primary" aria-hidden />
+            {weatherQ.data ? (
+              <span>{formatTemp(weatherQ.data.now)}</span>
+            ) : weatherQ.isError ? (
+              <span className="text-muted-foreground">—</span>
+            ) : (
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+            )}
+          </div>
         </div>
-      </div>
-      <div className="mt-4 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-soft" role="status" aria-live="polite">
+      </section>
+      <div className="relative -mt-14 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-main" role="status" aria-live="polite">
         <div className="relative shrink-0">
           <ProgressRing value={ringTotal ? ringDone / ringTotal : 0} />
-          <span className="absolute inset-0 grid place-items-center text-sm font-bold">{ringDone}/{ringTotal}</span>
+          <span className="absolute inset-0 grid place-items-center text-base font-extrabold">{ringDone}/{ringTotal}</span>
         </div>
         <div className="min-w-0">
-          <p className="text-lg font-bold">{t("today.ringDone", { done: ringDone, total: ringTotal })}</p>
-          <p className="text-xl font-bold text-primary">{t("minutes.today", { n: minutesToday })}</p>
-          <p className="text-sm font-bold text-muted-foreground">{streak ? t("today.streak", { n: streak }) : t("today.noStreak")}</p>
+          <p className="text-sm font-bold text-muted-foreground">{t("today.ringDone", { done: ringDone, total: ringTotal })}</p>
+          <p className="text-xs font-bold text-muted-foreground">{t("minutes.title")}</p>
+          <p className="text-2xl font-extrabold text-primary-dark">{t("common.minutes", { n: minutesToday })}</p>
+          <p className="text-sm font-bold text-warm-foreground">{streak ? t("today.streak", { n: streak }) : t("today.noStreak")}</p>
         </div>
       </div>
 
@@ -278,18 +296,6 @@ function Today() {
         </section>
       )}
 
-      <div className="mt-4 flex items-center gap-3 rounded-3xl bg-card p-4 shadow-soft">
-        <span aria-hidden className="grid size-14 place-items-center rounded-full bg-accent text-3xl">
-          🧒
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-xl font-bold">{profile.child_name}</p>
-          <p className="text-muted-foreground">
-            {age(months)} · {t("age.total", { n: months })}
-          </p>
-        </div>
-      </div>
-
       <div className="mt-4 rounded-3xl bg-card p-4 shadow-soft">
         {mood === undefined ? null : mood === null ? (
           <>
@@ -297,8 +303,8 @@ function Today() {
             <p className="text-sm text-muted-foreground">{t("mood.hint")}</p>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {MOODS.map((m) => (
-                <Button key={m} variant="soft" className="h-auto flex-col gap-1 py-3" onClick={() => setMood.mutate(m)}>
-                  <span aria-hidden className="text-3xl">{MOOD_EMOJI[m]}</span>
+                <Button key={m} variant="soft" className={`h-auto flex-col gap-1 py-3 ${m === "tired" ? "bg-warm-soft text-warm-foreground hover:bg-warm-soft" : ""}`} onClick={() => setMood.mutate(m)}>
+                  <MoodFace mood={m} />
                   <span className="text-xs whitespace-normal">{t(`mood.${m}`)}</span>
                 </Button>
               ))}
@@ -306,7 +312,7 @@ function Today() {
           </>
         ) : (
           <div className="flex gap-3">
-            <span aria-hidden className="text-3xl">{MOOD_EMOJI[mood]}</span>
+            <MoodFace mood={mood} className="shrink-0" />
             <div className="min-w-0 flex-1">
               {mood === "tired" ? (
                 <>
@@ -323,6 +329,26 @@ function Today() {
         )}
       </div>
 
+      <section className="mt-4 rounded-3xl bg-warm-soft p-4">
+        <h2 className="text-lg font-extrabold text-warm-foreground">{t("quick.title")}</h2>
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          {PLACES.map(({ id, Icon }) => (
+            <button key={id} type="button" aria-pressed={place === id} onClick={() => setPlace(place === id ? null : id)}
+              className={`flex min-h-11 flex-col items-center gap-1 rounded-2xl border-2 bg-card px-1 py-3 text-xs font-extrabold ${place === id ? "border-warm text-warm-foreground" : "border-transparent text-foreground"}`}>
+              <Icon className="size-6 text-warm" aria-hidden />
+              {t(`quick.places.${id}`)}
+            </button>
+          ))}
+        </div>
+        {place && (
+          <ul className="mt-3 space-y-2">
+            {[1, 2].map((n) => (
+              <li key={n} className="rounded-2xl bg-card p-3 text-sm font-semibold">{t(`quick.ideas.${place}${n}`)}</li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       {planQuery.isPending ? (
         <div className="mt-6 flex flex-col items-center gap-3 rounded-3xl bg-card p-8 text-center shadow-soft" role="status">
           <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
@@ -338,7 +364,7 @@ function Today() {
       ) : (
         <>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-            <p className="font-bold">{t(mood === "tired" ? "today.lightPlan" : "today.plannedFor")}</p>
+            <p className="text-lg font-extrabold">{t(mood === "tired" ? "today.lightPlan" : "today.plannedFor")}</p>
             <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">
               {source === "ai" ? (
                 <Sparkles className="size-3.5" aria-hidden />
@@ -351,7 +377,7 @@ function Today() {
 
           <section className="mt-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold">{t("rituals.today")}</h2>
+              <h2 className="inline-flex items-center gap-1.5 font-extrabold text-sleep-foreground"><Moon className="size-4" aria-hidden />{t("rituals.today")}</h2>
               <Link to="/rituals" className="text-sm font-bold text-primary underline">{t("rituals.setup")}</Link>
             </div>
             {rituals.length === 0 ? (
@@ -368,14 +394,14 @@ function Today() {
                         aria-checked={on}
                         disabled={toggleRitual.isPending}
                         onClick={() => toggleRitual.mutate(r)}
-                        className={`flex w-40 items-start gap-2 rounded-2xl border-2 p-3 text-left ${on ? "border-success bg-success-soft" : "border-border bg-card"}`}
+                        className={`flex w-40 items-start gap-2 rounded-2xl border-2 p-3 text-left ${on ? "border-sleep-foreground bg-sleep" : "border-transparent bg-sleep"}`}
                       >
-                        <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border-2 ${on ? "border-success bg-success text-success-foreground" : "border-border"}`}>
+                        <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border-2 ${on ? "border-sleep-foreground bg-sleep-foreground text-primary-foreground" : "border-sleep-foreground/40 bg-card"}`}>
                           {on && <Check className="size-4" aria-hidden />}
                         </span>
                         <span className="min-w-0">
                           <span className="block text-sm font-bold leading-tight">{ritualTitle(r, t)}</span>
-                          <span className="block text-xs text-muted-foreground">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""}</span>
+                          <span className="block text-xs text-sleep-foreground">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""}</span>
                         </span>
                       </button>
                     </li>
@@ -392,6 +418,7 @@ function Today() {
               <ActivityCard
                 key={activity.key}
                 activity={activity}
+                next={activity.key === nextKey}
                 log={todayLogs.get(activity.key)}
                 busy={mark.isPending && mark.variables?.activity.key === activity.key}
                 onDone={() => mark.mutate({ activity, status: "done", reaction: null })}
@@ -416,8 +443,8 @@ function ProgressRing({ value }: { value: number }) {
   const c = 2 * Math.PI * r;
   return (
     <svg viewBox="0 0 64 64" className="size-16 shrink-0 -rotate-90" aria-hidden>
-      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" className="stroke-muted" />
-      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" strokeLinecap="round" className="stroke-success transition-all"
+      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" className="stroke-primary-soft" />
+      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" strokeLinecap="round" className="stroke-primary transition-all"
         strokeDasharray={c} strokeDashoffset={c * (1 - Math.min(1, value))} />
     </svg>
   );

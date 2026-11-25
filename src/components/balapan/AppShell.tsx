@@ -31,13 +31,13 @@ function BottomNav() {
       aria-label={t("nav.label")}
       className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-md px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
-      <div className="grid grid-cols-4 gap-1 rounded-3xl border border-border bg-card p-1.5 shadow-soft">
+      <div className="grid grid-cols-4 gap-1 rounded-3xl border border-border bg-card p-1.5">
         {items.map(({ to, label, Icon }) => (
           <Link
             key={to}
             to={to}
-            className="flex flex-col items-center gap-1 rounded-2xl py-2 text-xs font-bold text-muted-foreground transition-colors"
-            activeProps={{ className: "bg-primary-soft text-primary" }}
+            className="flex flex-col items-center gap-1 min-h-11 rounded-2xl py-2 text-xs font-bold text-muted-foreground transition-colors"
+            activeProps={{ className: "bg-primary text-primary-foreground" }}
           >
             <Icon className="size-6" aria-hidden />
             <span>{label}</span>

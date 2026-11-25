@@ -12,7 +12,7 @@
 
 @theme inline {
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Comfortaa", "Nunito", ui-sans-serif, sans-serif;
+  --font-display: "Nunito", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 8px);
   --radius-md: calc(var(--radius) - 4px);
@@ -31,6 +31,18 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-2: var(--primary-soft-2);
+  --color-primary-dark: var(--primary-dark);
+  --color-warm: var(--warm);
+  --color-warm-soft: var(--warm-soft);
+  --color-warm-foreground: var(--warm-foreground);
+  --color-sleep: var(--sleep);
+  --color-sleep-foreground: var(--sleep-foreground);
+  --color-steppe-sky: var(--steppe-sky);
+  --color-steppe-far: var(--steppe-far);
+  --color-steppe-mid: var(--steppe-mid);
+  --color-steppe-near: var(--steppe-near);
+  --color-steppe-sun: var(--steppe-sun);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -75,49 +87,63 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --shadow-soft: 0 10px 30px -14px color-mix(in oklab, var(--foreground) 30%, transparent);
-  --shadow-lift: 0 14px 34px -12px color-mix(in oklab, var(--primary) 45%, transparent);
+  --shadow-soft: 0 0 0 1px var(--border);
+  --shadow-lift: none;
+  --shadow-main: 0 12px 28px -14px color-mix(in oklab, var(--primary-dark) 35%, transparent), 0 0 0 1px var(--border);
 }
 
 :root {
   --radius: 1.25rem;
-  --background: oklch(0.975 0.016 80);
-  --foreground: oklch(0.3 0.035 50);
-  --card: oklch(0.995 0.008 85);
-  --card-foreground: oklch(0.3 0.035 50);
-  --popover: oklch(0.995 0.008 85);
-  --popover-foreground: oklch(0.3 0.035 50);
-  --primary: oklch(0.68 0.135 45);
-  --primary-foreground: oklch(0.99 0.01 85);
-  --primary-soft: oklch(0.93 0.045 55);
-  --secondary: oklch(0.92 0.04 145);
-  --secondary-foreground: oklch(0.34 0.06 150);
-  --muted: oklch(0.945 0.018 75);
-  --muted-foreground: oklch(0.52 0.03 55);
-  --accent: oklch(0.93 0.075 92);
-  --accent-foreground: oklch(0.38 0.07 75);
-  --success: oklch(0.62 0.11 150);
-  --success-foreground: oklch(0.99 0.01 140);
-  --success-soft: oklch(0.93 0.05 150);
-  --destructive: oklch(0.6 0.19 28);
-  --destructive-foreground: oklch(0.99 0.01 85);
-  --border: oklch(0.9 0.025 70);
-  --input: oklch(0.88 0.03 70);
-  --ring: oklch(0.68 0.135 45);
+  --background: #F6F5F0;
+  --foreground: #1F2328;
+  --card: #FFFFFF;
+  --card-foreground: #1F2328;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2328;
+  --primary: #4F7A63;
+  --primary-dark: #34543F;
+  --primary-foreground: #FFFFFF;
+  --primary-soft: #E6EFE8;
+  --primary-soft-2: #D3E3D7;
+  --secondary: #E6EFE8;
+  --secondary-foreground: #34543F;
+  --muted: #EFEDE6;
+  --muted-foreground: #5B616B;
+  --accent: #FBE9DF;
+  --accent-foreground: #8A4A2E;
+  --warm: #E59A7A;
+  --warm-soft: #FBE9DF;
+  --warm-foreground: #8A4A2E;
+  --sleep: #ECE8F6;
+  --sleep-foreground: #4A3F86;
+  --success: #4F7A63;
+  --success-foreground: #FFFFFF;
+  --success-soft: #E6EFE8;
+  --destructive: #C2553B;
+  --destructive-foreground: #FFFFFF;
+  --border: #E6E2DA;
+  --input: #E6E2DA;
+  --ring: #4F7A63;
 
-  --cat-speech: oklch(0.92 0.045 230);
-  --cat-speech-foreground: oklch(0.45 0.1 235);
-  --cat-gross: oklch(0.92 0.05 145);
-  --cat-gross-foreground: oklch(0.45 0.1 148);
-  --cat-fine: oklch(0.92 0.05 55);
-  --cat-fine-foreground: oklch(0.52 0.13 45);
-  --cat-creative: oklch(0.92 0.045 10);
-  --cat-creative-foreground: oklch(0.52 0.14 15);
-  --cat-emotions: oklch(0.94 0.07 95);
-  --cat-emotions-foreground: oklch(0.5 0.1 80);
+  --cat-speech: #E8EEF6;
+  --cat-speech-foreground: #3E5F86;
+  --cat-gross: #E6EFE8;
+  --cat-gross-foreground: #34543F;
+  --cat-fine: #FBE9DF;
+  --cat-fine-foreground: #8A4A2E;
+  --cat-creative: #F8E6EA;
+  --cat-creative-foreground: #8E3F55;
+  --cat-emotions: #F7F0D8;
+  --cat-emotions-foreground: #7A5F1C;
 
-  --chat-user: oklch(0.45 0.08 45);
-  --chat-user-foreground: oklch(0.985 0.012 85);
+  --chat-user: #4F7A63;
+  --chat-user-foreground: #FFFFFF;
+
+  --steppe-sky: #E6EFE8;
+  --steppe-far: #D3E3D7;
+  --steppe-mid: #A9C6B1;
+  --steppe-near: #7FA58C;
+  --steppe-sun: #F3C9A6;
 
   --chart-1: var(--cat-speech-foreground);
   --chart-2: var(--cat-gross-foreground);
@@ -150,14 +176,13 @@
   h2,
   h3 {
     font-family: var(--font-display);
+    font-weight: 800;
     letter-spacing: -0.01em;
   }
 }
 
 @utility bg-warm-glow {
-  background-image:
-    radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--accent) 70%, transparent) 0, transparent 45%),
-    radial-gradient(circle at 100% 20%, color-mix(in oklab, var(--primary-soft) 90%, transparent) 0, transparent 50%);
+  background-image: none;
 }
 
 @utility pb-safe-nav {
