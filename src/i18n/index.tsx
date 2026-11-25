@@ -33,6 +33,30 @@ function pluralRu(n: number): "one" | "few" | "many" {
   return "many";
 }
 
+// Dates are formatted by hand from the dictionaries: the server runtime only
+// has English locale data, so toLocaleDateString("kk-KZ") falls back to English.
+export function formatLongDate(lang: Lang, date: Date): string {
+  return translate(lang, "dates.long", {
+    weekday: translate(lang, `dates.weekdays.${date.getDay()}`),
+    day: date.getDate(),
+    month: translate(lang, `dates.months.${date.getMonth()}`),
+  });
+}
+
+export function formatDateWithYear(lang: Lang, date: Date): string {
+  return translate(lang, "dates.withYear", {
+    day: date.getDate(),
+    month: translate(lang, `dates.months.${date.getMonth()}`),
+    year: date.getFullYear(),
+  });
+}
+
+export function formatShortDate(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  return `${dd}.${mm}.${date.getFullYear()}`;
+}
+
 export function formatAge(lang: Lang, months: number): string {
   const years = Math.floor(months / 12);
   const rest = months % 12;

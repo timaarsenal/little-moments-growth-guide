@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { AppShell } from "@/components/balapan/AppShell";
 import { Button } from "@/components/ui/button";
-import { useI18n } from "@/i18n";
+import { formatDateWithYear, useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { momentsQuery } from "@/lib/moments";
 
@@ -44,7 +44,7 @@ function Moments() {
 
   const byDate = new Map<string, NonNullable<typeof q.data>>();
   for (const m of q.data ?? []) byDate.set(m.plan_date, [...(byDate.get(m.plan_date) ?? []), m]);
-  const fmt = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU", { day: "numeric", month: "long", year: "numeric" });
+  const fmt = (d: string) => formatDateWithYear(lang, new Date(`${d}T12:00:00`));
 
   return (
     <AppShell>

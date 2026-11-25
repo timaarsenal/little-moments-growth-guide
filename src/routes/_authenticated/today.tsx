@@ -13,7 +13,7 @@ import { BedtimeRitual, Hero } from "@/components/illustrations";
 import { MomentButton } from "@/components/balapan/MomentButton";
 import { WeeklySummary } from "@/components/balapan/WeeklySummary";
 import { Button } from "@/components/ui/button";
-import { useI18n } from "@/i18n";
+import { formatLongDate, useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
 import { pickFromLibrary, quickIdeas } from "@/lib/library";
@@ -220,7 +220,7 @@ function Today() {
     today,
   );
   const showWoke = months < INFANT_MAX_MONTHS;
-  const dateLabel = new Date(`${today}T12:00:00`).toLocaleDateString(lang === "kz" ? "kk-KZ" : "ru-RU", { weekday: "long", day: "numeric", month: "long" });
+  const dateLabel = formatLongDate(lang, new Date(`${today}T12:00:00`));
   const nextKey = plan.find((a) => !todayLogs.get(a.key))?.key;
 
   return (
