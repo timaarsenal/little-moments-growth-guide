@@ -8,6 +8,7 @@ import { AppShell } from "@/components/balapan/AppShell";
 import { Button } from "@/components/ui/button";
 import { Chick } from "@/components/illustrations";
 import { formatShortDate, useI18n } from "@/i18n";
+import { threadTitle } from "@/lib/chat-title";
 import { localTodayISO } from "@/lib/age";
 import { createChatThread, threadsQuery } from "@/lib/chat";
 import { logsQuery } from "@/lib/logs";
@@ -97,7 +98,7 @@ function Threads() {
               <Link to="/assistant/$threadId" params={{ threadId: th.id }} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
                 <Chick className="size-9 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold">{th.title || t("assistant.untitled")}</p>
+                  <p className="truncate font-bold">{threadTitle(th.title, t)}</p>
                   <p className="text-xs text-muted-foreground">{formatShortDate(new Date(th.created_at))}</p>
                 </div>
                 <ChevronRight className="size-5 text-muted-foreground" aria-hidden />

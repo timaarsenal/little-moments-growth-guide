@@ -13,7 +13,7 @@ import { BedtimeRitual, Hero } from "@/components/illustrations";
 import { MomentButton } from "@/components/balapan/MomentButton";
 import { WeeklySummary } from "@/components/balapan/WeeklySummary";
 import { Button } from "@/components/ui/button";
-import { formatLongDate, useI18n } from "@/i18n";
+import { formatShortDate, useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
 import { pickFromLibrary, quickIdeas } from "@/lib/library";
@@ -220,7 +220,7 @@ function Today() {
     today,
   );
   const showWoke = months < INFANT_MAX_MONTHS;
-  const dateLabel = formatLongDate(lang, new Date(`${today}T12:00:00`));
+  const dateLabel = formatShortDate(new Date(`${today}T12:00:00`));
   const nextKey = plan.find((a) => !todayLogs.get(a.key))?.key;
 
   return (
@@ -230,7 +230,7 @@ function Today() {
         <Hero preserve="xMidYMax slice" className="absolute inset-0 size-full" />
         <div className="relative flex items-start justify-between gap-3 px-5 pt-4">
           <div className="min-w-0">
-            <p className="text-sm font-bold capitalize text-primary-dark">{dateLabel}</p>
+            <p className="text-sm font-bold text-primary-dark">{dateLabel}</p>
             <h1 className="mt-0.5 truncate text-3xl font-extrabold">{t("today.title", { name: profile.child_name })}</h1>
             <p className="text-sm font-semibold text-muted-foreground">{age(months)}</p>
           </div>

@@ -12,11 +12,13 @@ export function Hero({ className, preserve = "xMidYMid meet" }: P) {
     <ellipse cx="236" cy="92" rx="26" ry="9" fill="#FFFFFF" opacity="0.8"/>
     <path d="M0 170 Q90 120 190 160 T390 140 L390 250 L0 250 Z" fill="#D3E3D7"/>
     <path d="M0 200 Q120 150 240 190 T390 180 L390 250 L0 250 Z" fill="#A9C7B2"/>
+    <g transform="translate(-92 -16)">
     <path d="M262 168 Q290 138 318 168 Z" fill="#FFFFFF"/>
     <rect x="262" y="166" width="56" height="22" fill="#FFFFFF"/>
     <path d="M266 170 L314 170" stroke="#E59A7A" strokeWidth="3"/>
     <path d="M268 178 L312 178" stroke="#E59A7A" strokeWidth="2" strokeDasharray="4 4"/>
     <rect x="284" y="174" width="12" height="14" rx="2" fill="#E59A7A"/>
+    </g>
     <path d="M0 225 Q140 190 270 222 T390 215 L390 250 L0 250 Z" fill="#7FA88C"/>
     <ellipse cx="98" cy="196" rx="26" ry="22" fill="#F5C66B"/>
     <circle cx="98" cy="170" r="17" fill="#F5C66B"/>

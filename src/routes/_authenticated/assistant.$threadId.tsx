@@ -12,6 +12,7 @@ import { AppShell } from "@/components/balapan/AppShell";
 import { Chick } from "@/components/illustrations";
 import { HelpDialog } from "@/components/balapan/HelpDialog";
 import { Button } from "@/components/ui/button";
+import { threadTitle } from "@/lib/chat-title";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { localTodayISO } from "@/lib/age";
@@ -146,7 +147,7 @@ function Chat({ threadId }: { threadId: string }) {
     <AppShell fill>
       <div className="flex items-center gap-2">
         <Button asChild size="icon" variant="ghost"><Link to="/assistant" aria-label={t("assistant.back")}><ArrowLeft aria-hidden /></Link></Button>
-        <h1 className="min-w-0 flex-1 truncate text-xl font-bold">{thread.title || t("assistant.untitled")}</h1>
+        <h1 className="min-w-0 flex-1 truncate text-xl font-bold">{activity ? activity.title : threadTitle(thread.title, t)}</h1>
       </div>
 
       <Conversation className="min-h-0">
