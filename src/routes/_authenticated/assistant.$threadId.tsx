@@ -1,6 +1,6 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, MessageCircleHeart } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -9,6 +9,7 @@ import { Message, MessageContent, MessageResponse } from "@/components/ai-elemen
 import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { AppShell } from "@/components/balapan/AppShell";
+import { Chick } from "@/components/illustrations";
 import { HelpDialog } from "@/components/balapan/HelpDialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
@@ -152,7 +153,7 @@ function Chat({ threadId }: { threadId: string }) {
         <ConversationContent className="gap-4 px-0 pb-6">
           {messages.length === 0 && !busy && (
             <div className="mt-4 rounded-3xl bg-card p-5 text-center shadow-soft">
-              <MessageCircleHeart className="mx-auto size-10 text-primary" aria-hidden />
+              <Chick className="mx-auto size-16" />
               <p className="mt-2 font-bold">{t("assistant.emptyTitle")}</p>
               <p className="mt-1 text-sm text-muted-foreground">{t("assistant.emptyText")}</p>
               <div className="mt-4 flex flex-col gap-2">
@@ -167,17 +168,23 @@ function Chat({ threadId }: { threadId: string }) {
               {m.role === "user" && m.activity_title && (
                 <p className="ml-auto text-xs text-muted-foreground">{t("assistant.about", { title: m.activity_title })}</p>
               )}
+              <div className="flex items-end gap-2 group-[.is-user]:contents">
+              {m.role === "assistant" && <Chick className="size-8 shrink-0" />}
               <MessageContent className="text-base group-[.is-user]:rounded-3xl group-[.is-user]:rounded-br-md group-[.is-user]:bg-chat-user group-[.is-user]:text-chat-user-foreground">
                 {m.role === "user" ? <p className="whitespace-pre-wrap">{m.content}</p> : <MessageResponse>{m.content}</MessageResponse>}
               </MessageContent>
+              </div>
               {m.role === "assistant" && m.show_help && <HelpDialog />}
             </Message>
           ))}
           {busy && (
             <Message from="assistant">
+              <div className="flex items-end gap-2">
+              <Chick className="size-8 shrink-0" />
               <MessageContent className="text-base">
                 {pendingText ? <MessageResponse>{pendingText}</MessageResponse> : <Shimmer>{t("assistant.typing")}</Shimmer>}
               </MessageContent>
+              </div>
             </Message>
           )}
         </ConversationContent>

@@ -7,7 +7,8 @@ import { toast } from "sonner";
 
 import { ActivityCard } from "@/components/balapan/ActivityCard";
 import { AppShell } from "@/components/balapan/AppShell";
-import { MoodFace, SteppeArt } from "@/components/balapan/Illustrations";
+import { MoodFace } from "@/components/balapan/Illustrations";
+import { BedtimeRitual, Hero } from "@/components/illustrations";
 import { MomentButton } from "@/components/balapan/MomentButton";
 import { WeeklySummary } from "@/components/balapan/WeeklySummary";
 import { Button } from "@/components/ui/button";
@@ -224,7 +225,7 @@ function Today() {
   return (
     <AppShell>
       <section className="relative -mx-5 -mt-2 h-56 overflow-hidden">
-        <SteppeArt className="absolute inset-0 size-full" />
+        <Hero preserve="xMidYMax slice" className="absolute inset-0 size-full" />
         <div className="relative flex items-start justify-between gap-3 px-5 pt-4">
           <div className="min-w-0">
             <p className="text-sm font-bold capitalize text-primary-dark">{dateLabel}</p>
@@ -404,6 +405,7 @@ function Today() {
                         </span>
                         <span className="min-w-0">
                           <span className="block text-sm font-bold leading-tight">{ritualTitle(r, t)}</span>
+                          {r.anchor === "bed" && <BedtimeRitual className="mb-1 h-8 w-9" />}
                           <span className="block text-xs text-sleep-foreground">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""}</span>
                         </span>
                       </button>

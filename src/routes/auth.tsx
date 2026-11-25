@@ -3,6 +3,7 @@ import { MailCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { Brand } from "@/components/balapan/Brand";
+import { Chick } from "@/components/illustrations";
 import { Disclaimer } from "@/components/balapan/Disclaimer";
 import { LangSwitch } from "@/components/balapan/LangSwitch";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,7 @@ function AuthPage() {
       </header>
 
       <main className="flex flex-1 flex-col px-5 pb-6">
+        <Chick className="mx-auto mt-2 size-28" />
         {resetTo ? (
           <div className="mt-10 rounded-3xl bg-card p-6 text-center shadow-soft animate-pop-in" role="status">
             <span className="mx-auto grid size-16 place-items-center rounded-full bg-success-soft text-success">

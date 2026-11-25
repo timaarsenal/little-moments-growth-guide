@@ -2,6 +2,7 @@ import type { Category } from "@/lib/types";
 import type { Mood } from "@/lib/mood";
 import { CATEGORY_STYLE } from "@/lib/categories";
 import { cn } from "@/lib/utils";
+import { Beads, Creative, Emotions, Kitchen, Obstacle } from "@/components/illustrations";
 
 /** Wide steppe landscape with a yurt and a little bird, drawn with theme tokens. */
 export function SteppeArt({ className }: { className?: string }) {
@@ -55,17 +56,28 @@ export function MoodFace({ mood, className }: { mood: Mood; className?: string }
   );
 }
 
-/** Square category illustration (64×64) or a wide banner for the next activity. */
+const SQUARE: Record<Category, (p: { className?: string }) => React.JSX.Element> = {
+  speech: Kitchen,
+  gross_motor: Obstacle,
+  fine_motor: Beads,
+  creative_sensory: Creative,
+  emotions_social: Emotions,
+};
+
+/** Category illustration: 64×64 square, or a full-width picture for the next activity. */
 export function CategoryArt({ category, wide = false, className }: { category: Category; wide?: boolean; className?: string }) {
-  const style = CATEGORY_STYLE[category];
-  const [bg, fg] = style.chip.split(" ");
-  return (
-    <div className={cn("relative overflow-hidden", bg, wide ? "h-32 w-full" : "size-16 shrink-0 rounded-2xl", className)} aria-hidden>
-      <svg viewBox="0 0 100 60" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-1/2 w-full">
-        <path d="M0 30 Q30 10 55 28 T100 22 V60 H0Z" className="fill-card" opacity="0.55" />
-      </svg>
-      {wide && <span className="absolute right-6 top-4 size-8 rounded-full bg-card/70" />}
-      <style.Icon className={cn("absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2", fg, wide ? "size-14" : "size-8")} strokeWidth={2.2} />
-    </div>
-  );
+  if (wide && category === "gross_motor") return <Obstacle preserve="xMidYMid slice" className={cn("block h-32 w-full", className)} />;
+  const Art = SQUARE[category];
+  if (wide) {
+    const bg = CATEGORY_STYLE[category].chip.split(" ")[0];
+    return (
+      <div className={cn("grid h-32 w-full place-items-center", bg, className)} aria-hidden>
+        <Art className="size-28" />
+      </div>
+    );
+  }
+  if (category === "gross_motor") {
+    return <div className={cn("size-16 shrink-0 overflow-hidden rounded-2xl", className)} aria-hidden><Obstacle preserve="xMidYMid slice" className="size-full" /></div>;
+  }
+  return <Art className={cn("size-16 shrink-0", className)} />;
 }
