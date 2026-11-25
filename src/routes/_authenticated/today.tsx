@@ -15,6 +15,8 @@ import { pickFromLibrary } from "@/lib/library";
 import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
 import { profileQuery } from "@/lib/profile";
+import { lightenPlan } from "@/lib/light-plan";
+import { MOODS, moodQuery, type Mood } from "@/lib/mood";
 import { isWeekendDate, planSlots } from "@/lib/schedule";
 import { localize, type DayPlan, type LogLite, type PlannedActivity, type Reaction } from "@/lib/types";
 
@@ -36,6 +38,8 @@ export const Route = createFileRoute("/_authenticated/today")({
   },
   component: Today,
 });
+
+const MOOD_EMOJI: Record<Mood, string> = { good: "😊", ok: "😐", tired: "😩" };
 
 type MarkInput =
   | { activity: PlannedActivity; status: "done" | "skipped"; reaction: Reaction | null }
@@ -74,7 +78,29 @@ function Today() {
     retry: false,
   });
   const source = planQuery.data?.source ?? "library";
-  const plan = useMemo(() => (planQuery.data?.items ?? []).map((item) => localize(item, lang)), [planQuery.data, lang]);
+  const moodKey = moodQuery(user.id, today);
+  const { data: mood } = useQuery(moodKey);
+  const plan = useMemo(() => {
+    const items = planQuery.data?.items ?? [];
+    return (mood === "tired" ? lightenPlan(items) : items).map((item) => localize(item, lang));
+  }, [planQuery.data, lang, mood]);
+
+  const setMood = useMutation({
+    mutationFn: async (value: Mood | null) => {
+      if (value === null) {
+        const { error } = await supabase.from("parent_moods").delete().eq("user_id", user.id).eq("mood_date", today);
+        if (error) throw error;
+        return;
+      }
+      const { error } = await supabase.from("parent_moods").upsert({ user_id: user.id, mood_date: today, mood: value }, { onConflict: "user_id,mood_date" });
+      if (error) throw error;
+    },
+    onMutate: (value) => queryClient.setQueryData(moodKey.queryKey, value),
+    onError: (err) => {
+      void queryClient.invalidateQueries({ queryKey: moodKey.queryKey });
+      toast.error(t("common.error", { message: err instanceof Error ? err.message : String(err) }));
+    },
+  });
 
   const mark = useMutation({
     mutationFn: async ({ activity, status, reaction }: MarkInput) => {
@@ -142,6 +168,39 @@ function Today() {
         </div>
       </div>
 
+      <div className="mt-4 rounded-3xl bg-card p-4 shadow-soft">
+        {mood === undefined ? null : mood === null ? (
+          <>
+            <p className="text-lg font-bold">{t("mood.question")}</p>
+            <p className="text-sm text-muted-foreground">{t("mood.hint")}</p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {MOODS.map((m) => (
+                <Button key={m} variant="soft" className="h-auto flex-col gap-1 py-3" onClick={() => setMood.mutate(m)}>
+                  <span aria-hidden className="text-3xl">{MOOD_EMOJI[m]}</span>
+                  <span className="text-xs whitespace-normal">{t(`mood.${m}`)}</span>
+                </Button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex gap-3">
+            <span aria-hidden className="text-3xl">{MOOD_EMOJI[mood]}</span>
+            <div className="min-w-0 flex-1">
+              {mood === "tired" ? (
+                <>
+                  <p className="font-bold">{t("mood.tiredTitle")}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t("mood.tiredText")}</p>
+                  <Button asChild variant="soft" size="sm" className="mt-3"><Link to="/assistant">{t("mood.talk")}</Link></Button>
+                </>
+              ) : (
+                <p className="font-semibold">{t(mood === "good" ? "mood.goodReply" : "mood.okReply")}</p>
+              )}
+              <button type="button" className="mt-2 block text-xs text-muted-foreground underline" onClick={() => setMood.mutate(null)}>{t("mood.change")}</button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {planQuery.isPending ? (
         <div className="mt-6 flex flex-col items-center gap-3 rounded-3xl bg-card p-8 text-center shadow-soft" role="status">
           <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
@@ -157,7 +216,7 @@ function Today() {
       ) : (
         <>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
-            <p className="font-bold">{t("today.plannedFor")}</p>
+            <p className="font-bold">{t(mood === "tired" ? "today.lightPlan" : "today.plannedFor")}</p>
             <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-bold text-muted-foreground">
               {source === "ai" ? (
                 <Sparkles className="size-3.5" aria-hidden />

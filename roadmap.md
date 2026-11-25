@@ -1,6 +1,6 @@
 # Balapan roadmap
-- [ ] Finish assistant: chat/history, activity discussion, daily mood/light plan, help dialog, child interests; fix preview errors and verify
-- [ ] Separate saved chat threads with their own URLs, new-chat action and thread list
+- [x] Finish assistant: chat/history, activity discussion, daily mood/light plan, help dialog, child interests; fix preview errors and verify
+- [x] Separate saved chat threads with their own URLs, new-chat action and thread list
 - [x] Email sign-in (user chose email login)
 - [x] Onboarding -> child profile saved in DB
 - [x] Today screen with library activities placed in free windows, avoiding naps

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { translate } from "@/i18n";
 import { ageInMonths } from "./age";
 import { readStoredPlan } from "./ai-plan";
-import { CHAT_COLUMNS, toChatMessage, type ChatStreamEvent } from "./chat";
+import { CHAT_COLUMNS, CHAT_MODEL_HISTORY, toChatMessage, type ChatStreamEvent } from "./chat";
 import type { ChatInput } from "./chat-input";
 import { mentionsCrisis } from "./crisis";
 import { lightenPlan } from "./light-plan";
@@ -82,7 +82,7 @@ export async function streamAssistant(data: ChatInput, context: { supabase: Supa
         .eq("thread_id", threadId)
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
-,
+        .limit(CHAT_MODEL_HISTORY),
     ]);
     for (const res of [profileRes, planRes, logsRes, moodRes, historyRes]) {
       if (res.error) throw res.error;
