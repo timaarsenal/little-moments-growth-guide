@@ -77,10 +77,10 @@ function Profile() {
   }, []);
   async function toggleNotify(on: boolean) {
     if (!on) { localStorage.setItem(NOTIFY_PREF, "off"); setNotify(false); return; }
-    if (typeof Notification === "undefined") return toast.error(t("weekly.notifyDenied"));
-    if (window.top !== window.self) return toast.error(t("weekly.notifyFrame"));
+    if (typeof Notification === "undefined") { toast.error(t("weekly.notifyDenied")); return; }
+    if (window.top !== window.self) { toast.error(t("weekly.notifyFrame")); return; }
     const perm = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
-    if (perm !== "granted") return toast.error(t("weekly.notifyDenied"));
+    if (perm !== "granted") { toast.error(t("weekly.notifyDenied")); return; }
     localStorage.setItem(NOTIFY_PREF, "on");
     setNotify(true);
   }
