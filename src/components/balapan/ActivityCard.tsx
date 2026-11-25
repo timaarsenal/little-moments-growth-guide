@@ -47,7 +47,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         status === "skipped" && "opacity-60",
       )}
     >
-      {next && <CategoryArt category={activity.category} wide />}
+      {next && <CategoryArt activity={activity} wide />}
       <div className="p-5">
       {next && (
         <span className="mb-3 inline-flex items-center rounded-full bg-warm-soft px-3 py-1 text-xs font-extrabold text-warm-foreground">
@@ -55,7 +55,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         </span>
       )}
       <div className="flex gap-3">
-        {!next && <CategoryArt category={activity.category} />}
+        {!next && <CategoryArt activity={activity} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-muted-foreground">
             {!next && <span>{activity.start_time}</span>}

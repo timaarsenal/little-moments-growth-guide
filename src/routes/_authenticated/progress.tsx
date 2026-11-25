@@ -1,18 +1,19 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Flame, Stethoscope } from "lucide-react";
+import { Flame } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/balapan/AppShell";
 import { WeeklySummary } from "@/components/balapan/WeeklySummary";
-import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO, shiftISO } from "@/lib/age";
 import { CATEGORY_STYLE } from "@/lib/categories";
 import { kazakhWordsLearned } from "@/lib/kazakh-words";
-import { MILESTONES, groupsForAge, shouldDiscuss, type MilestoneStatus } from "@/lib/milestones";
+import { quizMilestones, type MilestoneStatus } from "@/lib/milestones";
+import { replanToday } from "@/lib/replan";
+import { MilestoneQuiz } from "@/components/balapan/MilestoneQuiz";
 import { streakDays, weekTotals } from "@/lib/minutes";
 import { profileQuery } from "@/lib/profile";
 import { ritualChecksQuery } from "@/lib/rituals";
@@ -56,7 +57,7 @@ const PERIODS = ["today", "week", "month"] as const;
 type Period = (typeof PERIODS)[number];
 
 function Progress() {
-  const { t, lang, age } = useI18n();
+  const { t } = useI18n();
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
   const today = localTodayISO();
@@ -105,7 +106,6 @@ function Progress() {
   const byCat = CATEGORIES.map((c) => ({ c, n: weekDone.filter((l) => l.category === c).length }));
   const maxCat = Math.max(1, ...byCat.map((b) => b.n));
   const words = kazakhWordsLearned(stats.plans, stats.logs.filter((l) => l.plan_date >= weekStart));
-  const groups = groupsForAge(months);
 
   return (
     <AppShell>
@@ -187,46 +187,9 @@ function Progress() {
       <section className="mt-6">
         <h2 className="text-2xl font-bold">{t("progress.milestonesTitle")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{t("progress.milestonesHint")}</p>
-        {groups.map((g) => {
-          const items = MILESTONES.filter((m) => m.age_months === g);
-          return (
-            <div key={g} className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
-              <h3 className="font-bold">{t("progressX.forAge", { age: age(g) })}</h3>
-              <p className="text-sm text-muted-foreground">{t("progress.checked", { done: items.filter((m) => checks.get(m.id) === "yes").length, total: items.length })}</p>
-              <ul className="mt-3 divide-y divide-border">
-                {items.map((m) => {
-                  const status = checks.get(m.id);
-                  return (
-                    <li key={m.id} className="py-3">
-                      <p className="font-semibold">{m[lang]}</p>
-                      <div className="mt-2 grid grid-cols-2 gap-2" role="radiogroup" aria-label={m[lang]}>
-                        {(["yes", "not_yet"] as const).map((s) => (
-                          <button key={s} type="button" role="radio" aria-checked={status === s}
-                            onClick={() => setCheck.mutate({ id: m.id, status: status === s ? null : s })}
-                            className={cn("rounded-2xl border-2 px-2 py-2 text-sm font-bold",
-                              status === s ? (s === "yes" ? "border-success bg-success-soft" : "border-primary bg-primary-soft") : "border-border text-muted-foreground")}>
-                            {t(s === "yes" ? "flags.can" : "flags.notYet")}
-                          </button>
-                        ))}
-                      </div>
-                      {shouldDiscuss(m, status, months) && (
-                        <div className="mt-3 rounded-2xl bg-accent p-3 text-accent-foreground" role="note">
-                          <p className="text-sm font-semibold">{t("flags.calm")}</p>
-                          <Button size="sm" variant="outline" className="mt-2" disabled>
-                            <Stethoscope aria-hidden />
-                            {t("flags.consult")}
-                            <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{t("flags.soon")}</span>
-                          </Button>
-                        </div>
-                      )}
-                      <a href={m.source.split(" ").pop()} target="_blank" rel="noreferrer" className="mt-1 block text-xs text-muted-foreground underline">{t("progress.source")}: CDC</a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
+        <MilestoneQuiz name={profile.child_name} months={months} items={quizMilestones(months)} checks={checks}
+          onAnswer={(id, status) => setCheck.mutate({ id, status })}
+          onFinish={() => { void replanToday(user.id, queryClient).catch(() => undefined); }} />
       </section>
     </AppShell>
   );

@@ -13,6 +13,8 @@ import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
 import { parseNaps } from "@/lib/sleep";
+import { INTEREST_TAGS } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { profileQuery } from "@/lib/profile";
 import { replanToday } from "@/lib/replan";
 import { CITIES, DEFAULT_CITY, isCity, type CityKey } from "@/lib/weather";
@@ -48,7 +50,7 @@ function Profile() {
   const { data: profile } = useSuspenseQuery(profileQuery);
   const { user } = Route.useRouteContext();
   const update = useMutation({
-    mutationFn: async (patch: { bilingual?: boolean; city?: string }) => {
+    mutationFn: async (patch: { bilingual?: boolean; city?: string; interest_tags?: string[] }) => {
       const { error } = await supabase.from("child_profiles").update(patch).eq("user_id", user.id);
       if (error) throw error;
       await replanToday(user.id, queryClient);
@@ -83,17 +85,23 @@ function Profile() {
             <p className="text-muted-foreground">
               {age(ageInMonths(profile.birth_date, localTodayISO()))}
             </p>
-            <h3 className="mt-4 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
-            {profile.interest_tags.length || profile.interests ? (
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {profile.interest_tags.map((tag) => (
-                  <li key={tag} className="rounded-full bg-primary-soft px-3 py-1 text-sm font-bold text-primary">{t(`interests.${tag}`)}</li>
-                ))}
-                {profile.interests && <li className="break-words rounded-full bg-muted px-3 py-1 text-sm font-bold">{profile.interests}</li>}
-              </ul>
-            ) : (
-              <p className="mt-1 font-semibold">{t("profile.noInterests")}</p>
-            )}
+            <h3 id="interests" className="mt-4 scroll-mt-20 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
+            <p className="text-xs text-muted-foreground">{t("profile.interestsHint")}</p>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {INTEREST_TAGS.map((tag) => {
+                const on = profile.interest_tags.includes(tag);
+                return (
+                  <li key={tag}>
+                    <button type="button" aria-pressed={on} disabled={update.isPending}
+                      onClick={() => update.mutate({ interest_tags: on ? profile.interest_tags.filter((x) => x !== tag) : [...profile.interest_tags, tag] })}
+                      className={cn("min-h-11 rounded-full border-2 px-4 text-sm font-bold", on ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-muted-foreground")}>
+                      {t(`interests.${tag}`)}
+                    </button>
+                  </li>
+                );
+              })}
+              {profile.interests && <li className="flex min-h-11 items-center break-words rounded-full bg-muted px-4 text-sm font-bold">{profile.interests}</li>}
+            </ul>
           </section>
 
           <section className="mt-4 space-y-4 rounded-3xl bg-card p-5 shadow-soft">

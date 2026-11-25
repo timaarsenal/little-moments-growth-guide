@@ -1,3 +1,4 @@
+import { skillsInProgress } from "./milestones";
 import { createServerFn } from "@tanstack/react-start";
 import { GatewayError, generateResponse } from "@lovable.dev/ai-gateway";
 
@@ -99,7 +100,9 @@ export const getTodayPlan = createServerFn({ method: "POST" })
     } catch (err) {
       console.error("[plan] weather unavailable", err);
     }
+    const { data: checks } = await supabase.from("milestone_checks").select("milestone_id").eq("status", "not_yet");
     const prefs: PlanPrefs = {
+      skills: skillsInProgress((checks ?? []).map((c) => c.milestone_id)),
       interests: profile.interest_tags,
       customInterest: profile.interests.trim(),
       bilingual: profile.bilingual,

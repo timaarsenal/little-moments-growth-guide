@@ -141,3 +141,64 @@ export function Emotions({ className, preserve = "xMidYMid meet" }: P) {
     </svg>
   );
 }
+
+export function Book({ className, preserve = "xMidYMid meet" }: P) {
+  return (
+    <svg aria-hidden className={className} preserveAspectRatio={preserve} viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#ECE8F6"/>
+    <path d="M12 20 Q22 16 32 21 V48 Q22 43 12 47 Z" fill="#FFFFFF"/>
+    <path d="M52 20 Q42 16 32 21 V48 Q42 43 52 47 Z" fill="#F3C9A8"/>
+    <path d="M32 21 V48" stroke="#4A3F86" strokeWidth="2"/>
+    <path d="M16 27 H27 M16 32 H27 M16 37 H25" stroke="#4A3F86" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+    <circle cx="42" cy="31" r="5" fill="#E59A7A"/>
+    </svg>
+  );
+}
+
+export function Ball({ className, preserve = "xMidYMid meet" }: P) {
+  return (
+    <svg aria-hidden className={className} preserveAspectRatio={preserve} viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#E6EFE8"/>
+    <path d="M0 48 Q32 40 64 48 V64 H0 Z" fill="#A9C7B2"/>
+    <circle cx="32" cy="32" r="14" fill="#E59A7A"/>
+    <path d="M18 32 Q32 24 46 32 M32 18 Q26 32 32 46" fill="none" stroke="#FFFFFF" strokeWidth="2.5"/>
+    <circle cx="50" cy="14" r="5" fill="#F5C66B"/>
+    </svg>
+  );
+}
+
+export function Water({ className, preserve = "xMidYMid meet" }: P) {
+  return (
+    <svg aria-hidden className={className} preserveAspectRatio={preserve} viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#E3EEF6"/>
+    <path d="M32 12 Q42 26 42 33 A10 10 0 0 1 22 33 Q22 26 32 12 Z" fill="#7FB0D6"/>
+    <path d="M10 46 Q16 42 22 46 T34 46 T46 46 T58 46" fill="none" stroke="#7FB0D6" strokeWidth="3" strokeLinecap="round"/>
+    <path d="M10 53 Q16 49 22 53 T34 53 T46 53 T58 53" fill="none" stroke="#A9C7E2" strokeWidth="3" strokeLinecap="round"/>
+    <circle cx="28" cy="30" r="2.5" fill="#FFFFFF"/>
+    </svg>
+  );
+}
+
+export function Blocks({ className, preserve = "xMidYMid meet" }: P) {
+  return (
+    <svg aria-hidden className={className} preserveAspectRatio={preserve} viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#FBE9DF"/>
+    <rect x="12" y="38" width="18" height="16" rx="3" fill="#4F7A63"/>
+    <rect x="34" y="38" width="18" height="16" rx="3" fill="#F5C66B"/>
+    <rect x="23" y="20" width="18" height="16" rx="3" fill="#E59A7A"/>
+    <path d="M28 12 L32 6 L36 12 Z" fill="#4A3F86"/>
+    </svg>
+  );
+}
+
+export function Music({ className, preserve = "xMidYMid meet" }: P) {
+  return (
+    <svg aria-hidden className={className} preserveAspectRatio={preserve} viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="16" fill="#ECE8F6"/>
+    <path d="M26 44 V18 L46 14 V40" fill="none" stroke="#4A3F86" strokeWidth="3" strokeLinejoin="round"/>
+    <ellipse cx="21" cy="44" rx="6" ry="5" fill="#E59A7A"/>
+    <ellipse cx="41" cy="40" rx="6" ry="5" fill="#E59A7A"/>
+    <path d="M10 20 Q14 16 10 12 M54 52 Q58 48 54 44" fill="none" stroke="#7FA88C" strokeWidth="2.5" strokeLinecap="round"/>
+    </svg>
+  );
+}

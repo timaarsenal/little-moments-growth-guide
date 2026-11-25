@@ -81,6 +81,8 @@ export interface PlanPrefs {
   customInterest: string;
   bilingual: boolean;
   weather: string | null;
+  /** Milestones the parent marked "not yet" in the quiz. */
+  skills?: string[];
 }
 export const NO_PREFS: PlanPrefs = { interests: [], customInterest: "", bilingual: false, weather: null };
 /** A bilingual family gets at most this many Kazakh activities a day. */
@@ -137,6 +139,7 @@ Rules:
 - why: one short sentence on what skill it develops. steps: 3–5 short, concrete steps for the parent.
 - Interests: when the child has interests, build EVERY activity you can around them (e.g. count toy cars, sort animals by size, sing about the ball) and list the interests you used in "interests" ("custom" for the parent's own text). Use an empty list only when no interest fits.
 - Bilingual: when bilingual is true, make 1–2 activities (never more) Kazakh-language activities (is_kazakh=true): new Kazakh words on the day's theme, a short тақпақ, or a Kazakh folk game (e.g. «Ақ серек, көк серек», «Соқыр теке», «Орамал тастау»). List 2–5 taught words in kazakh_words with a Russian translation. In the "ru" text write each Kazakh word with its translation in brackets, e.g. «алма (яблоко)». In the "kz" text keep the Kazakh words as they are. Otherwise is_kazakh=false and kazakh_words=[].
+- Skills in progress: when skills_in_progress is not empty, gently build 1–2 activities that practise those skills through play (never mention tests or delays).
 - outdoor=true only for activities that happen outside (walks, playground). When weather_today says play must stay home, plan NO outdoor activities.
 - Write every text twice: "ru" in natural Russian and "kz" in natural Kazakh (Cyrillic). Same activity, same meaning in both.`;
 
@@ -147,6 +150,7 @@ export function buildAiInput(ageMonths: number, slots: Slot[], history: LogLite[
     child_interests: prefs.interests,
     child_interests_custom: prefs.customInterest || null,
     bilingual: prefs.bilingual,
+    skills_in_progress: prefs.skills ?? [],
     weather_today: prefs.weather ?? "fine for a walk",
     day: weekend ? "weekend" : "weekday",
     slots: slots.map((s) => ({

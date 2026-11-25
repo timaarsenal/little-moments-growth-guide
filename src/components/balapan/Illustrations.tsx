@@ -1,8 +1,8 @@
-import type { Category } from "@/lib/types";
+import type { Category, PlannedActivity } from "@/lib/types";
 import type { Mood } from "@/lib/mood";
 import { CATEGORY_STYLE } from "@/lib/categories";
 import { cn } from "@/lib/utils";
-import { Beads, Creative, Emotions, Kitchen, Obstacle } from "@/components/illustrations";
+import { Ball, Beads, Blocks, Book, Creative, Emotions, Kitchen, Music, Obstacle, Water } from "@/components/illustrations";
 
 /** Wide steppe landscape with a yurt and a little bird, drawn with theme tokens. */
 export function SteppeArt({ className }: { className?: string }) {
@@ -56,27 +56,48 @@ export function MoodFace({ mood, className }: { mood: Mood; className?: string }
   );
 }
 
-const SQUARE: Record<Category, (p: { className?: string }) => React.JSX.Element> = {
-  speech: Kitchen,
+type Art = (p: { className?: string; preserve?: string }) => React.JSX.Element;
+
+const SQUARE: Record<Category, Art> = {
+  speech: Book,
   gross_motor: Obstacle,
   fine_motor: Beads,
   creative_sensory: Creative,
   emotions_social: Emotions,
 };
 
-/** Category illustration: 64×64 square, or a full-width picture for the next activity. */
-export function CategoryArt({ category, wide = false, className }: { category: Category; wide?: boolean; className?: string }) {
-  if (wide && category === "gross_motor") return <Obstacle preserve="xMidYMid slice" className={cn("block h-32 w-full", className)} />;
-  const Art = SQUARE[category];
+/** Picture by meaning: keywords in the activity title and materials (RU and KZ), category picture otherwise. */
+const BY_WORDS: [Art, string[]][] = [
+  [Water, ["вод", "купа", "ванн", "переливал", "шомыл", "мыльн"]],
+  [Kitchen, ["круп", "кухн", "кастрюл", "ложк", "миск", "ас үй", "жарма", "тесто", "готов"]],
+  [Beads, ["бус", "нанизыв", "шнур", "макарон", "моншақ", "прищеп", "пуговиц"]],
+  [Blocks, ["кубик", "башн", "пирамид", "конструк", "текше", "мұнара", "сортер"]],
+  [Music, ["песен", "песн", "музык", "танц", "ритм", "барабан", "колыбел", "тақпақ", "әуен", "би ", "орамал"]],
+  [Book, ["книж", "книг", "сказк", "кітап", "ертегі", "картинк", "слов", "сөз"]],
+  [Ball, ["мяч", "прогул", "гуля", "серуен", "площадк", "допты", "доп "]],
+  [Obstacle, ["подушк", "препятств", "полос", "прыг", "ползт", "жастық", "кедерг", "секір"]],
+  [Creative, ["рису", "краск", "лепк", "пластил", "мелк", "сурет", "бояу", "клей"]],
+  [Emotions, ["эмоц", "обним", "кукл", "зеркал", "сезім", "қуырш", "айна", "чувств", "мишк"]],
+];
+
+export function artFor(activity: Pick<PlannedActivity, "category" | "title" | "materials">): Art {
+  const text = ` ${activity.title} ${activity.materials.join(" ")} `.toLowerCase();
+  return BY_WORDS.find(([, words]) => words.some((w) => text.includes(w)))?.[0] ?? SQUARE[activity.category];
+}
+
+/** Activity illustration: 64×64 square, or a full-width picture for the next activity. */
+export function CategoryArt({ activity, wide = false, className }: { activity: Pick<PlannedActivity, "category" | "title" | "materials">; wide?: boolean; className?: string }) {
+  const Art = artFor(activity);
+  if (wide && Art === Obstacle) return <Obstacle preserve="xMidYMid slice" className={cn("block h-32 w-full", className)} />;
   if (wide) {
-    const bg = CATEGORY_STYLE[category].chip.split(" ")[0];
+    const bg = CATEGORY_STYLE[activity.category].chip.split(" ")[0];
     return (
       <div className={cn("grid h-32 w-full place-items-center", bg, className)} aria-hidden>
         <Art className="size-28" />
       </div>
     );
   }
-  if (category === "gross_motor") {
+  if (Art === Obstacle) {
     return <div className={cn("size-16 shrink-0 overflow-hidden rounded-2xl", className)} aria-hidden><Obstacle preserve="xMidYMid slice" className="size-full" /></div>;
   }
   return <Art className={cn("size-16 shrink-0", className)} />;

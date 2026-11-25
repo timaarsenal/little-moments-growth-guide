@@ -232,7 +232,8 @@ function Today() {
             <h1 className="mt-0.5 truncate text-3xl font-extrabold">{t("today.title", { name: profile.child_name })}</h1>
             <p className="text-sm font-semibold text-muted-foreground">{age(months)}</p>
           </div>
-          <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-extrabold" aria-label={t("weather.label")}>
+          <div className="flex w-40 shrink-0 flex-col items-end gap-1.5">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-extrabold" aria-label={t("weather.label")}>
             <CloudSun className="size-4 text-primary" aria-hidden />
             {weatherQ.data ? (
               <span>{formatTemp(weatherQ.data.now)}</span>
@@ -241,6 +242,12 @@ function Today() {
             ) : (
               <Loader2 className="size-4 animate-spin" aria-hidden />
             )}
+          </div>
+          {weatherQ.data && (
+            <p className="relative rounded-2xl bg-card/95 px-3 py-2 text-xs font-bold leading-snug text-primary-dark before:absolute before:-top-1.5 before:right-6 before:size-3 before:rotate-45 before:bg-card/95" role="note">
+              {weatherNote ?? t("weather.goodWalk")}
+            </p>
+          )}
           </div>
         </div>
       </section>
@@ -330,6 +337,14 @@ function Today() {
         )}
       </div>
 
+      {profile.interest_tags.length === 0 && !profile.interests && (
+        <section className="mt-4 rounded-3xl border border-border bg-card p-4">
+          <p className="text-lg font-extrabold">{t("interestsPrompt.title", { name: profile.child_name })}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("interestsPrompt.text")}</p>
+          <Button asChild className="mt-3 w-full"><Link to="/profile" hash="interests">{t("interestsPrompt.button")}</Link></Button>
+        </section>
+      )}
+
       <section className="mt-4 rounded-3xl bg-warm-soft p-4">
         <h2 className="text-lg font-extrabold text-warm-foreground">{t("quick.title")}</h2>
         <div className="mt-3 grid grid-cols-4 gap-2">
@@ -384,6 +399,7 @@ function Today() {
               <h2 className="inline-flex items-center gap-1.5 font-extrabold text-sleep-foreground"><Moon className="size-4" aria-hidden />{t("rituals.today")}</h2>
               <Link to="/rituals" className="text-sm font-bold text-primary underline">{t("rituals.setup")}</Link>
             </div>
+            <p className="mt-1 text-sm text-muted-foreground">{t("rituals.why")}</p>
             {rituals.length === 0 ? (
               <p className="mt-2 rounded-2xl border-2 border-dashed border-border p-3 text-sm font-semibold text-muted-foreground">{t("rituals.empty")}</p>
             ) : (

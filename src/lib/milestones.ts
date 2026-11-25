@@ -25,3 +25,15 @@ export function groupsForAge(ageMonths: number): number[] {
 export function shouldDiscuss(m: Milestone, status: MilestoneStatus | undefined, ageMonths: number): boolean {
   return m.isRedFlag && status === "not_yet" && ageMonths >= m.discuss_after_months;
 }
+
+/** Quiz questions: the two latest age groups the child has reached. */
+export function quizMilestones(ageMonths: number): Milestone[] {
+  const groups = groupsForAge(ageMonths).slice(-2);
+  return MILESTONES.filter((m) => groups.includes(m.age_months));
+}
+
+/** Skills the parent marked "not yet" — the planner builds activities around them (max 8). */
+export function skillsInProgress(notYetIds: string[]): string[] {
+  const ids = new Set(notYetIds);
+  return MILESTONES.filter((m) => ids.has(m.id)).map((m) => m.ru).slice(0, 8);
+}
