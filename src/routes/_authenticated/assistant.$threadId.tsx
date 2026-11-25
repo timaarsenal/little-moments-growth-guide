@@ -149,7 +149,7 @@ function Chat({ threadId }: { threadId: string }) {
       </div>
 
       <Conversation className="min-h-0">
-        <ConversationContent className="gap-4 px-0">
+        <ConversationContent className="gap-4 px-0 pb-6">
           {messages.length === 0 && !busy && (
             <div className="mt-4 rounded-3xl bg-card p-5 text-center shadow-soft">
               <MessageCircleHeart className="mx-auto size-10 text-primary" aria-hidden />

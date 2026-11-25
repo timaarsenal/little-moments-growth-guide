@@ -10,3 +10,9 @@
 - [ ] Profile screen (basic view/edit/sign-out done; polish later)
 - [x] RU/KZ translations (ru.json, kz.json) + switcher
 - [x] Disclaimer footer + bottom nav
+- [ ] 10. Pediatrician signals: isRedFlag + discuss-after age in milestones, calm message + "Online consultation (soon)"
+- [ ] 9. Bilingual child setting: 1–2 Kazakh activities/day, 🇰🇿 badge, weekly Kazakh words counter
+- [ ] 8. Weather (Open-Meteo, city in profile, default Astana): outdoor → indoor swap, widget on Today
+- [ ] 7. "Minutes together": today next to progress ring, weekly chart + comparison, weekly share card
+- [ ] 5. Rituals (anchors, templates, custom, checkmarks on Today) + Moments (private photos, consent, album, delete)
+- [ ] 3. Interests multi-select in onboarding/profile, AI uses them, "With interests: …" badge, re-plan on change
