@@ -132,6 +132,7 @@ Rules:
 - duration_min must be between ${MIN_ACTIVITY} and ${MAX_ACTIVITY} and must not exceed the slot's max_minutes.
 - Use a different category for every activity when there are 5 or fewer slots. Categories: speech, gross_motor (movement or a walk), fine_motor, creative_sensory, emotions_social.
 - Prefer categories and kinds of activities the child liked; avoid what the child disliked or parents often skipped, but keep variety. Do not repeat recent activities word for word.
+- Slots with calm_only=true are within 30 minutes of a nap or bedtime: plan ONLY a calm, quiet activity there (books, quiet speech games, gentle touch, quiet fine-motor play) — never gross_motor, running, jumping or outdoor.
 - Morning slots: calm or energising activities at home. Evening slots: calm, before-bed friendly activities (no running right before sleep). Weekend slots: may include an outdoor walk.
 - Safety: an adult always supervises; no small objects that a child under 3 could choke on (no beads, buttons, coins, uncooked beans, small balloons); no screens; no food the child could choke on; no medical advice.
 - Materials: common household items only; use an empty list when nothing is needed.
@@ -155,6 +156,7 @@ export function buildAiInput(ageMonths: number, slots: Slot[], history: LogLite[
       window: s.window,
       start_time: s.start_time,
       max_minutes: s.max_minutes,
+      calm_only: s.calm,
     })),
     past_30_days: summarizeHistory(history),
   });
@@ -182,6 +184,8 @@ export function parseAiPlan(raw: string, slots: Slot[], today: string, prefs: Pl
   for (const a of parsed.data.activities) {
     const slot = bySlot.get(a.slot);
     if (!slot || out.has(slot.index)) continue;
+    // Never an active game right before sleep; the library fills this slot with a calm one instead.
+    if (slot.calm && (a.category === "gross_motor" || a.outdoor)) continue;
     if (slots.length <= CATEGORIES.length && usedCats.has(a.category)) continue;
     usedCats.add(a.category);
     const duration = Math.round(Math.min(slot.max_minutes, MAX_ACTIVITY, Math.max(MIN_ACTIVITY, a.duration_min)));

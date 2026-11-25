@@ -136,6 +136,7 @@ export type Database = {
           morning_minutes: number
           nap_end: string
           nap_start: string
+          naps: Json
           photo_consent_at: string | null
           updated_at: string
           user_id: string
@@ -156,6 +157,7 @@ export type Database = {
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
+          naps?: Json
           photo_consent_at?: string | null
           updated_at?: string
           user_id: string
@@ -176,6 +178,7 @@ export type Database = {
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
+          naps?: Json
           photo_consent_at?: string | null
           updated_at?: string
           user_id?: string

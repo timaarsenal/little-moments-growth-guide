@@ -36,6 +36,13 @@
       "when": 1795593148132,
       "tag": "0004_family_features",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795593880281,
+      "tag": "0005_child_naps_list",
+      "breakpoints": true
     }
   ]
 }

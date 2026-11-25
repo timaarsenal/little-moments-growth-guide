@@ -5,10 +5,10 @@ import type { Slot } from "@/lib/schedule";
 import type { LogLite } from "@/lib/types";
 
 const slots: Slot[] = [
-  { index: 0, window: "morning", start_time: "07:30", max_minutes: 7 },
-  { index: 1, window: "morning", start_time: "07:37", max_minutes: 7 },
-  { index: 2, window: "evening", start_time: "19:45", max_minutes: 15 },
-  { index: 3, window: "evening", start_time: "20:00", max_minutes: 15 },
+  { index: 0, window: "morning", start_time: "07:30", max_minutes: 7, calm: false },
+  { index: 1, window: "morning", start_time: "07:37", max_minutes: 7, calm: false },
+  { index: 2, window: "evening", start_time: "19:45", max_minutes: 15, calm: false },
+  { index: 3, window: "evening", start_time: "20:00", max_minutes: 15, calm: false },
 ];
 
 const log = (category: string, reaction: string | null, key = `lib:x-${category}`): LogLite => ({

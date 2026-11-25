@@ -1,6 +1,6 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Plus, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -11,9 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
 import { profileQuery } from "@/lib/profile";
 import { replanToday } from "@/lib/replan";
+import { toMinutes } from "@/lib/schedule";
+import { MAX_NAPS, defaultNaps, napRange, parseNaps, type Nap } from "@/lib/sleep";
 import { INTEREST_TAGS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -60,8 +63,8 @@ function Onboarding() {
   const [tags, setTags] = useState<string[]>(existing?.interest_tags ?? []);
   const [birth, setBirth] = useState(existing?.birth_date ?? "");
   const [wake, setWake] = useState(hhmm(existing?.wake_time ?? "07:00"));
-  const [napStart, setNapStart] = useState(hhmm(existing?.nap_start ?? "13:00"));
-  const [napEnd, setNapEnd] = useState(hhmm(existing?.nap_end ?? "15:00"));
+  const [naps, setNaps] = useState<Nap[]>(() => parseNaps(existing?.naps));
+  const [napsTouched, setNapsTouched] = useState(Boolean(existing));
   const [bed, setBed] = useState(hhmm(existing?.bed_time ?? "21:00"));
   const [morning, setMorning] = useState(existing?.morning_minutes ?? 15);
   const [evening, setEvening] = useState(existing?.evening_minutes ?? 30);
@@ -72,9 +75,28 @@ function Onboarding() {
     if (step === 1) {
       if (!name.trim()) return setError(t("onboarding.nameRequired"));
       if (!birth || birth > today) return setError(t("onboarding.birthRequired"));
+      if (!napsTouched) setNaps(defaultNaps(ageInMonths(birth, today), wake, bed));
     }
+    if (step === 2 && !napsValid()) return setError(t("onboarding.napsInvalid"));
     setStep((s) => Math.min(3, s + 1));
   }
+
+  function napsValid() {
+    let prev = toMinutes(wake);
+    for (const n of [...naps].sort((a, b) => toMinutes(a.start) - toMinutes(b.start))) {
+      if (toMinutes(n.start) <= prev || toMinutes(n.end) <= toMinutes(n.start)) return false;
+      prev = toMinutes(n.end);
+    }
+    return prev < toMinutes(bed);
+  }
+
+  function editNaps(next: Nap[]) {
+    setNapsTouched(true);
+    setNaps(next);
+  }
+
+  const months = birth && birth <= today ? ageInMonths(birth, today) : null;
+  const usual = months === null ? null : napRange(months);
 
   async function save() {
     setSaving(true);
@@ -90,8 +112,9 @@ function Onboarding() {
           interest_tags: INTEREST_TAGS.filter((tag) => tags.includes(tag)),
           birth_date: birth,
           wake_time: wake,
-          nap_start: napStart,
-          nap_end: napEnd,
+          naps: parseNaps(naps) as unknown as Json,
+          // Legacy columns mirror the first nap.
+          ...(parseNaps(naps)[0] ? { nap_start: parseNaps(naps)[0]!.start, nap_end: parseNaps(naps)[0]!.end } : {}),
           bed_time: bed,
           morning_minutes: morning,
           evening_minutes: evening,
@@ -202,13 +225,58 @@ function Onboarding() {
             <Field id="bed" label={`🌙 ${t("onboarding.bed")}`}>
               <Input id="bed" type="time" value={bed} onChange={(e) => setBed(e.target.value)} className={inputClass} />
             </Field>
-            <Field id="nap-start" label={`😴 ${t("onboarding.napStart")}`}>
-              <Input id="nap-start" type="time" value={napStart} onChange={(e) => setNapStart(e.target.value)} className={inputClass} />
-            </Field>
-            <Field id="nap-end" label={`🌤️ ${t("onboarding.napEnd")}`}>
-              <Input id="nap-end" type="time" value={napEnd} onChange={(e) => setNapEnd(e.target.value)} className={inputClass} />
-            </Field>
+
           </div>
+
+          <fieldset className="mt-6 space-y-3">
+            <legend className="text-lg font-bold">{t("onboarding.napsTitle")}</legend>
+            <p className="rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground">{t("onboarding.napsHint")}</p>
+            {usual && (
+              <p className="text-sm text-muted-foreground">
+                {t("onboarding.napsUsual", { range: usual[0] === usual[1] ? String(usual[0]) : `${usual[0]}–${usual[1]}` })}
+              </p>
+            )}
+            {naps.length === 0 && <p className="font-semibold text-muted-foreground">{t("onboarding.noNaps")}</p>}
+            <ul className="space-y-3">
+              {naps.map((n, i) => (
+                <li key={i} className="rounded-2xl bg-card p-3 shadow-soft">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold">{t("onboarding.napN", { n: i + 1 })}</span>
+                    <Button type="button" variant="ghost" size="icon" aria-label={t("onboarding.removeNap", { n: i + 1 })}
+                      onClick={() => editNaps(naps.filter((_, j) => j !== i))}>
+                      <Trash2 aria-hidden />
+                    </Button>
+                  </div>
+                  <div className="mt-1 grid grid-cols-2 gap-3">
+                    <Field id={`nap-${i}-start`} label={t("onboarding.napFrom")}>
+                      <Input id={`nap-${i}-start`} type="time" value={n.start} className={inputClass}
+                        onChange={(e) => editNaps(naps.map((x, j) => (j === i ? { ...x, start: e.target.value } : x)))} />
+                    </Field>
+                    <Field id={`nap-${i}-end`} label={t("onboarding.napTo")}>
+                      <Input id={`nap-${i}-end`} type="time" value={n.end} className={inputClass}
+                        onChange={(e) => editNaps(naps.map((x, j) => (j === i ? { ...x, end: e.target.value } : x)))} />
+                    </Field>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="soft" disabled={naps.length >= MAX_NAPS}
+                onClick={() => {
+                  const last = naps[naps.length - 1];
+                  const from = last ? toMinutes(last.end) + 90 : toMinutes(wake) + 180;
+                  const f = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+                  editNaps([...naps, { start: f(from), end: f(from + 60) }]);
+                }}>
+                <Plus aria-hidden />{t("onboarding.addNap")}
+              </Button>
+              {months !== null && (
+                <Button type="button" variant="ghost" onClick={() => editNaps(defaultNaps(months, wake, bed))}>
+                  {t("onboarding.resetNaps")}
+                </Button>
+              )}
+            </div>
+          </fieldset>
         </section>
       )}
 

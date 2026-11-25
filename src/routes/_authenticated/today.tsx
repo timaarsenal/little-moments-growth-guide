@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tansta
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { BookOpen, Check, CloudSun, Loader2, Sparkles } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { ActivityCard } from "@/components/balapan/ActivityCard";
@@ -18,7 +18,8 @@ import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
 import { profileQuery } from "@/lib/profile";
 import { lightenPlan } from "@/lib/light-plan";
-import { weekTotals } from "@/lib/minutes";
+import { streakDays, weekTotals } from "@/lib/minutes";
+import { INFANT_MAX_MONTHS, suggestForWakeWindow, type InfantActivity } from "@/lib/infant";
 import { isAnchor, ritualChecksQuery, ritualTitle, ritualsQuery, type Ritual } from "@/lib/rituals";
 import { statsQuery } from "@/lib/stats";
 import { DEFAULT_CITY, applyWeather, fetchWeather, formatTemp, isCity, weatherReason } from "@/lib/weather";
@@ -118,7 +119,8 @@ function Today() {
     onError: (err) => toast.error(t("common.error", { message: err instanceof Error ? err.message : String(err) })),
   });
   const isSunday = new Date(`${today}T12:00:00`).getDay() === 0;
-  const { data: stats } = useQuery({ ...statsQuery(user.id, today), enabled: isSunday });
+  const { data: stats } = useQuery(statsQuery(user.id, today));
+  const [woke, setWoke] = useState<{ left: number; items: InfantActivity[] } | null>(null);
   const weekMinutes = stats ? (weekTotals(stats.logs, checks, today, 1)[0] ?? 0) : 0;
 
   const setMood = useMutation({
@@ -197,6 +199,16 @@ function Today() {
     ritualsDone.reduce((s, r) => s + r.minutes, 0);
   const ringTotal = plan.length + rituals.length;
   const ringDone = doneCount + ritualsDone.length;
+  // Today's marks come from the instantly-updated logs, earlier days from stats.
+  const streak = streakDays(
+    [
+      ...(stats?.logs ?? []).filter((l) => l.plan_date !== today),
+      ...plan.filter((a) => todayLogs.get(a.key)?.status === "done").map((a) => ({ plan_date: today, status: "done", duration_min: a.duration_min })),
+    ],
+    checks,
+    today,
+  );
+  const showWoke = months < INFANT_MAX_MONTHS;
 
   return (
     <AppShell>
@@ -213,6 +225,58 @@ function Today() {
           )}
         </div>
       </div>
+      <div className="mt-4 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-soft" role="status" aria-live="polite">
+        <div className="relative shrink-0">
+          <ProgressRing value={ringTotal ? ringDone / ringTotal : 0} />
+          <span className="absolute inset-0 grid place-items-center text-sm font-bold">{ringDone}/{ringTotal}</span>
+        </div>
+        <div className="min-w-0">
+          <p className="text-lg font-bold">{t("today.ringDone", { done: ringDone, total: ringTotal })}</p>
+          <p className="text-xl font-bold text-primary">{t("minutes.today", { n: minutesToday })}</p>
+          <p className="text-sm font-bold text-muted-foreground">{streak ? t("today.streak", { n: streak }) : t("today.noStreak")}</p>
+        </div>
+      </div>
+
+      {showWoke && (
+        <section className="mt-4">
+          <Button size="lg" className="w-full" onClick={() => {
+            const now = new Date();
+            setWoke(suggestForWakeWindow(profile, now.getHours() * 60 + now.getMinutes(), now.getDate() + now.getHours()));
+          }}>
+            {t("today.woke")}
+          </Button>
+          {woke && (
+            <div className="mt-3 rounded-3xl bg-card p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-bold">{t("today.wokeTitle")}</p>
+                  <p className="text-sm text-muted-foreground">{t("today.wokeLeft", { n: woke.left })}</p>
+                </div>
+                <button type="button" className="text-sm text-muted-foreground underline" onClick={() => setWoke(null)}>{t("today.wokeClose")}</button>
+              </div>
+              {woke.items.length === 0 ? (
+                <p className="mt-2 font-semibold">{t("today.wokeNone")}</p>
+              ) : (
+                <>
+                  {woke.left <= 30 && <p className="mt-2 text-sm font-semibold text-primary">{t("today.wokeCalm")}</p>}
+                  <ul className="mt-3 space-y-3">
+                    {woke.items.map((a) => (
+                      <li key={a.id} className="rounded-2xl bg-muted/60 p-3">
+                        <p className="font-bold">{a[lang].title} · {t("common.minutes", { n: a.duration_min })}</p>
+                        <p className="text-sm text-muted-foreground">{a[lang].why}</p>
+                        <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">
+                          {a[lang].steps.map((step) => <li key={step}>{step}</li>)}
+                        </ol>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
       <div className="mt-4 flex items-center gap-3 rounded-3xl bg-card p-4 shadow-soft">
         <span aria-hidden className="grid size-14 place-items-center rounded-full bg-accent text-3xl">
           🧒
@@ -282,13 +346,6 @@ function Today() {
               )}
               {t(source === "ai" ? "today.ai" : "today.library")}
             </span>
-          </div>
-          <div className="mt-3 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-soft">
-            <ProgressRing value={ringTotal ? ringDone / ringTotal : 0} />
-            <div className="min-w-0">
-              <p className="text-2xl font-bold text-primary">{t("minutes.today", { n: minutesToday })}</p>
-              <p className="text-sm font-semibold text-muted-foreground">{t("today.summary", { done: doneCount, total: plan.length })}</p>
-            </div>
           </div>
 
           <section className="mt-4">

@@ -58,7 +58,8 @@ export function pickFromLibrary(
   const result: PlanItem[] = [];
 
   for (const slot of slots) {
-    const unused = LIBRARY.filter((a) => !usedIds.has(a.id));
+    // Right before sleep: only calm activities (no movement games, no walks).
+    const unused = LIBRARY.filter((a) => !usedIds.has(a.id) && !(slot.calm && (a.category === "gross_motor" || a.outdoor)));
     const freshCats = unused.filter((a) => !usedCats.has(a.category));
     const pool = freshCats.length ? freshCats : unused;
     const fitting = pool.filter((a) => a.duration_min <= slot.max_minutes);

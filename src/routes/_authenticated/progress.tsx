@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Flame, Stethoscope } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppShell } from "@/components/balapan/AppShell";
@@ -51,6 +52,9 @@ const checksQuery = (userId: string) => ({
   },
 });
 
+const PERIODS = ["today", "week", "month"] as const;
+type Period = (typeof PERIODS)[number];
+
 function Progress() {
   const { t, lang, age } = useI18n();
   const { user } = Route.useRouteContext();
@@ -59,6 +63,7 @@ function Progress() {
   const { data: profile } = useSuspenseQuery(profileQuery);
   const { data: stats } = useSuspenseQuery(statsQuery(user.id, today));
   const { data: rituals } = useSuspenseQuery(ritualChecksQuery(user.id, today));
+  const [period, setPeriod] = useState<Period>("week");
   const { data: checks = new Map<string, MilestoneStatus>() } = useQuery(checksQuery(user.id));
 
   const setCheck = useMutation({
@@ -93,7 +98,10 @@ function Progress() {
   const maxWeek = Math.max(1, ...weeks);
   const streak = streakDays(stats.logs, rituals, today);
   const weekStart = shiftISO(today, -6);
-  const weekDone = stats.logs.filter((l) => l.status === "done" && l.plan_date >= weekStart);
+  const periodStart = period === "today" ? today : shiftISO(today, period === "week" ? -6 : -29);
+  const weekDone = stats.logs.filter((l) => l.status === "done" && l.plan_date >= periodStart);
+  const periodRituals = rituals.filter((r) => r.check_date >= periodStart);
+  const periodMinutes = weekDone.reduce((sum, l) => sum + l.duration_min, 0) + periodRituals.reduce((sum, r) => sum + r.minutes, 0);
   const byCat = CATEGORIES.map((c) => ({ c, n: weekDone.filter((l) => l.category === c).length }));
   const maxCat = Math.max(1, ...byCat.map((b) => b.n));
   const words = kazakhWordsLearned(stats.plans, stats.logs.filter((l) => l.plan_date >= weekStart));
@@ -102,6 +110,41 @@ function Progress() {
   return (
     <AppShell>
       <h1 className="mt-2 text-3xl font-bold">{t("progress.title")}</h1>
+
+      <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
+        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-muted p-1" role="tablist" aria-label={t("progress.periodLabel")}>
+          {PERIODS.map((p) => (
+            <button key={p} type="button" role="tab" aria-selected={period === p} onClick={() => setPeriod(p)}
+              className={cn("rounded-xl py-2 text-sm font-bold", period === p ? "bg-card text-primary shadow-soft" : "text-muted-foreground")}>
+              {t(`progress.period.${p}`)}
+            </button>
+          ))}
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div><p className="text-3xl font-bold">{weekDone.length}</p><p className="text-xs font-semibold text-muted-foreground">{t("progress.periodDone")}</p></div>
+          <div><p className="text-3xl font-bold text-primary">{periodMinutes}</p><p className="text-xs font-semibold text-muted-foreground">{t("minutes.title")}</p></div>
+          <div><p className="text-3xl font-bold">{periodRituals.length}</p><p className="text-xs font-semibold text-muted-foreground">{t("progress.periodRituals")}</p></div>
+        </div>
+        {weekDone.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">{t("progress.empty")}</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {byCat.map(({ c, n }) => {
+              const st = CATEGORY_STYLE[c];
+              return (
+                <li key={c} className="flex items-center gap-2">
+                  <st.Icon className="size-4 shrink-0" aria-hidden />
+                  <span className="w-28 shrink-0 truncate text-sm font-semibold">{t(`categories.${c}`)}</span>
+                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
+                    <div className={cn("h-full rounded-full", st.bar)} style={{ width: `${(n / maxCat) * 100}%` }} />
+                  </div>
+                  <span className="w-5 text-right text-sm font-bold">{n}</span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
       <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
         <p className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("minutes.title")} · {t("minutes.week")}</p>
@@ -130,29 +173,6 @@ function Progress() {
 
       <div className="mt-4"><WeeklySummary minutes={thisWeek} /></div>
 
-      <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
-        <p className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{t("progress.week")}</p>
-        <p className="mt-1 text-3xl font-bold">{weekDone.length} <span className="text-base text-muted-foreground">{t("progress.doneCount")}</span></p>
-        {weekDone.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">{t("progress.empty")}</p>
-        ) : (
-          <ul className="mt-3 space-y-2">
-            {byCat.map(({ c, n }) => {
-              const st = CATEGORY_STYLE[c];
-              return (
-                <li key={c} className="flex items-center gap-2">
-                  <st.Icon className="size-4 shrink-0" aria-hidden />
-                  <span className="w-28 shrink-0 truncate text-sm font-semibold">{t(`categories.${c}`)}</span>
-                  <div className="h-3 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div className={cn("h-full rounded-full", st.bar)} style={{ width: `${(n / maxCat) * 100}%` }} />
-                  </div>
-                  <span className="w-5 text-right text-sm font-bold">{n}</span>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
 
       {(profile.bilingual || words.length > 0) && (
         <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">

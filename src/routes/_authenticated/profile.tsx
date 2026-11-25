@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
+import { parseNaps } from "@/lib/sleep";
 import { profileQuery } from "@/lib/profile";
 import { replanToday } from "@/lib/replan";
 import { CITIES, DEFAULT_CITY, isCity, type CityKey } from "@/lib/weather";
@@ -125,8 +126,8 @@ function Profile() {
             </h2>
             <Row label={t("onboarding.wake")} value={hhmm(profile.wake_time)} />
             <Row
-              label={t("onboarding.napStart").split(":")[0] ?? ""}
-              value={`${hhmm(profile.nap_start)}–${hhmm(profile.nap_end)}`}
+              label={t("profile.naps")}
+              value={parseNaps(profile.naps).map((n) => `${n.start}–${n.end}`).join(", ") || t("profile.napsNone")}
             />
             <Row label={t("onboarding.bed")} value={hhmm(profile.bed_time)} />
           </section>

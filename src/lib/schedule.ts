@@ -1,9 +1,10 @@
+import { parseNaps } from "./sleep";
 import type { WindowKind } from "./types";
 
 export interface ScheduleInput {
   wake_time: string;
-  nap_start: string;
-  nap_end: string;
+  /** Daytime naps as stored ([{ start, end }]); parsed with parseNaps. */
+  naps: unknown;
   bed_time: string;
   morning_minutes: number;
   evening_minutes: number;
@@ -17,6 +18,8 @@ export interface Slot {
   start_time: string;
   /** Activity length budget for this slot, 5–30 minutes */
   max_minutes: number;
+  /** Ends within 30 minutes of a nap or bedtime: calm activities only. */
+  calm: boolean;
 }
 
 interface FreeWindow {
@@ -45,35 +48,65 @@ export function isWeekendDate(iso: string): boolean {
   return day === 0 || day === 6;
 }
 
+/** Sleep periods of the day (naps inside wake..bed, then bedtime) as [start, end] minutes. */
+export function sleepStarts(p: ScheduleInput): number[] {
+  const wake = toMinutes(p.wake_time);
+  const bed = toMinutes(p.bed_time);
+  return [...parseNaps(p.naps).map((n) => toMinutes(n.start)).filter((s) => s > wake && s < bed), bed];
+}
+
+/** Awake stretches between wake-up, naps and bedtime. */
+function awakeSegments(p: ScheduleInput): { start: number; end: number }[] {
+  const wake = toMinutes(p.wake_time);
+  const bed = toMinutes(p.bed_time);
+  const naps = parseNaps(p.naps)
+    .map((n) => ({ s: toMinutes(n.start), e: toMinutes(n.end) }))
+    .filter((n) => n.s > wake && n.e < bed);
+  const out: { start: number; end: number }[] = [];
+  let cur = wake;
+  for (const n of naps) {
+    if (n.s > cur) out.push({ start: cur, end: n.s });
+    cur = Math.max(cur, n.e);
+  }
+  out.push({ start: cur, end: bed });
+  return out;
+}
+
 /**
- * Parent's free windows for a day, placed so they never touch the nap:
- * morning ends 15 min before the nap, weekend/evening windows start after the nap,
+ * Parent's free windows for a day, placed so they never touch any nap:
+ * morning ends 15 min before the first sleep, weekend window uses the longest later awake stretch,
  * evening ends 15 min before bedtime.
  */
 export function buildWindows(p: ScheduleInput, weekend: boolean): FreeWindow[] {
   const wake = toMinutes(p.wake_time);
-  const napStart = toMinutes(p.nap_start);
-  const napEnd = toMinutes(p.nap_end);
   const bed = toMinutes(p.bed_time);
+  const segs = awakeSegments(p);
+  const first = segs[0] ?? { start: wake, end: bed };
+  const last = segs[segs.length - 1] ?? first;
   const out: FreeWindow[] = [];
 
   const morningStart = wake + 30;
-  const morningMinutes = Math.min(p.morning_minutes, napStart - 15 - morningStart);
+  const morningMinutes = Math.min(p.morning_minutes, first.end - 15 - morningStart);
+  let busyUntil = morningStart;
   if (morningMinutes >= MIN_ACTIVITY) {
     out.push({ kind: "morning", start: morningStart, minutes: morningMinutes });
+    busyUntil = morningStart + morningMinutes;
   }
 
-  let earliestEvening = napEnd + 30;
   if (weekend) {
-    const weekendStart = napEnd + 30;
-    const weekendMinutes = Math.min(p.weekend_minutes, bed - 60 - weekendStart);
-    if (weekendMinutes >= MIN_ACTIVITY) {
-      out.push({ kind: "weekend", start: weekendStart, minutes: weekendMinutes });
-      earliestEvening = weekendStart + weekendMinutes + 30;
+    const later = segs.length > 1 ? segs.slice(1) : segs;
+    const seg = [...later].sort((a, b) => b.end - b.start - (a.end - a.start))[0];
+    if (seg) {
+      const start = Math.max(seg.start + 30, busyUntil + 60);
+      const minutes = Math.min(p.weekend_minutes, seg.end - (seg.end === bed ? 60 : 15) - start);
+      if (minutes >= MIN_ACTIVITY) {
+        out.push({ kind: "weekend", start, minutes });
+        busyUntil = start + minutes;
+      }
     }
   }
 
-  const eveningStart = Math.max(bed - 45 - p.evening_minutes, earliestEvening);
+  const eveningStart = Math.max(bed - 45 - p.evening_minutes, last.start + 30, busyUntil + 30);
   const eveningMinutes = Math.min(p.evening_minutes, bed - 15 - eveningStart);
   if (eveningMinutes >= MIN_ACTIVITY) {
     out.push({ kind: "evening", start: eveningStart, minutes: eveningMinutes });
@@ -111,12 +144,15 @@ export function planSlots(p: ScheduleInput, weekend: boolean): Slot[] {
     if (!moved) break;
   }
 
+  const sleeps = sleepStarts(p);
   const raw: Omit<Slot, "index">[] = [];
   for (const { w, count } of entries) {
     if (count === 0) continue;
     const budget = Math.min(MAX_ACTIVITY, Math.max(MIN_ACTIVITY, Math.floor(w.minutes / count)));
     for (let j = 0; j < count; j++) {
-      raw.push({ window: w.kind, start_time: fromMinutes(w.start + j * budget), max_minutes: budget });
+      const start = w.start + j * budget;
+      const nextSleep = sleeps.find((x) => x >= start) ?? Infinity;
+      raw.push({ window: w.kind, start_time: fromMinutes(start), max_minutes: budget, calm: start + budget > nextSleep - 30 });
     }
   }
 

@@ -5,9 +5,9 @@ import type { Slot } from "@/lib/schedule";
 import type { LogLite } from "@/lib/types";
 
 const slots: Slot[] = [
-  { index: 0, window: "morning", start_time: "07:30", max_minutes: 10 },
-  { index: 1, window: "evening", start_time: "19:45", max_minutes: 15 },
-  { index: 2, window: "evening", start_time: "20:00", max_minutes: 15 },
+  { index: 0, window: "morning", start_time: "07:30", max_minutes: 10, calm: false },
+  { index: 1, window: "evening", start_time: "19:45", max_minutes: 15, calm: false },
+  { index: 2, window: "evening", start_time: "20:00", max_minutes: 15, calm: false },
 ];
 
 const txt = (title: string) => ({ title, why: "Развивает речь малыша.", steps: ["Шаг один", "Шаг два"], materials: [] });
@@ -75,7 +75,7 @@ describe("what the AI is told", () => {
     const history = [log("Пузыри", "speech", "done", "liked"), log("Бег", "gross_motor", "done", "disliked")];
     const input = JSON.parse(buildAiInput(27, slots, history, false));
     expect(input.child_age_months).toBe(27);
-    expect(input.slots[0]).toEqual({ slot: 0, window: "morning", start_time: "07:30", max_minutes: 10 });
+    expect(input.slots[0]).toEqual({ slot: 0, window: "morning", start_time: "07:30", max_minutes: 10, calm_only: false });
     expect(input.past_30_days.liked).toEqual(["Пузыри"]);
     expect(input.past_30_days.disliked).toEqual(["Бег"]);
   });

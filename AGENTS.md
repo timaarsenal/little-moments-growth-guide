@@ -40,3 +40,4 @@ use the editor.
 - Weather, minutes, streaks, Kazakh-word counts and pediatrician signals are pure helpers (`src/lib/{weather,minutes,kazakh-words,milestones}.ts`) covered by `src/test/features.test.ts`; screens only render them, so rules stay testable.
 - Bad-weather swaps are applied at display time over the stored daily plan (`applyWeather`), and the plan generator also receives weather, so cached plans stay stable while the weather can change.
 - Moment photos live in the private `moments` bucket under `<user_id>/…`, shown via short-lived signed URLs; deleting removes the file and the row.
+- Daytime sleep is the `naps` JSON list on `child_profiles` (0–8 items, parsed by `parseNaps` in `src/lib/sleep.ts`); `nap_start`/`nap_end` are deprecated mirrors of the first nap. Slots within 30 min of any sleep are flagged `calm` and never get movement/outdoor activities (library and AI parser both enforce it).
