@@ -1,23 +1,25 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { MotionProps } from "motion/react";
+import type { HTMLMotionProps, MotionStyle } from "motion/react";
 import { motion } from "motion/react";
-import type { CSSProperties, ElementType, JSX } from "react";
+import type { ElementType, JSX } from "react";
 import { memo, useMemo } from "react";
 
-type MotionHTMLProps = MotionProps & Record<string, unknown>;
+function createMotionElement(element: keyof JSX.IntrinsicElements) {
+  return motion.create<HTMLMotionProps<"span">, string>(element);
+}
 
 // Cache motion components at module level to avoid creating during render
 const motionComponentCache = new Map<
   keyof JSX.IntrinsicElements,
-  React.ComponentType<MotionHTMLProps>
+  ReturnType<typeof createMotionElement>
 >();
 
 const getMotionComponent = (element: keyof JSX.IntrinsicElements) => {
   let component = motionComponentCache.get(element);
   if (!component) {
-    component = motion.create(element);
+    component = createMotionElement(element);
     motionComponentCache.set(element, component);
   }
   return component;
@@ -46,6 +48,10 @@ const ShimmerComponent = ({
     () => (children?.length ?? 0) * spread,
     [children, spread]
   );
+  const shimmerStyle: MotionStyle & { "--spread": string } = {
+    "--spread": `${dynamicSpread}px`,
+    backgroundImage: "var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))",
+  };
 
   return (
     <MotionComponent
@@ -56,13 +62,7 @@ const ShimmerComponent = ({
         className
       )}
       initial={{ backgroundPosition: "100% center" }}
-      style={
-        {
-          "--spread": `${dynamicSpread}px`,
-          backgroundImage:
-            "var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))",
-        } as CSSProperties
-      }
+      style={shimmerStyle}
       transition={{
         duration,
         ease: "linear",

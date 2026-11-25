@@ -62,6 +62,7 @@ export type Database = {
           id: string
           role: string
           show_help: boolean
+          thread_id: string | null
           user_id: string
         }
         Insert: {
@@ -72,6 +73,7 @@ export type Database = {
           id?: string
           role: string
           show_help?: boolean
+          thread_id?: string | null
           user_id: string
         }
         Update: {
@@ -82,6 +84,39 @@ export type Database = {
           id?: string
           role?: string
           show_help?: boolean
+          thread_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_owner_fk"
+            columns: ["thread_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          activity_key: string | null
+          created_at: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          activity_key?: string | null
+          created_at?: string
+          id?: string
+          title?: string
+          user_id: string
+        }
+        Update: {
+          activity_key?: string | null
+          created_at?: string
+          id?: string
+          title?: string
           user_id?: string
         }
         Relationships: []

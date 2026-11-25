@@ -54,6 +54,7 @@ function Onboarding() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(existing?.child_name ?? "");
+  const [interests, setInterests] = useState(existing?.interests ?? "");
   const [birth, setBirth] = useState(existing?.birth_date ?? "");
   const [wake, setWake] = useState(hhmm(existing?.wake_time ?? "07:00"));
   const [napStart, setNapStart] = useState(hhmm(existing?.nap_start ?? "13:00"));
@@ -82,6 +83,7 @@ function Onboarding() {
         {
           user_id: auth.user.id,
           child_name: name.trim(),
+          interests: interests.trim(),
           birth_date: birth,
           wake_time: wake,
           nap_start: napStart,
@@ -95,7 +97,8 @@ function Onboarding() {
       );
       if (dbError) throw dbError;
       // The schedule may have changed: drop today's stored plan so it is picked again.
-      await supabase.from("daily_plans").delete().eq("user_id", auth.user.id).eq("plan_date", localTodayISO());
+      const { error: planError } = await supabase.from("daily_plans").delete().eq("user_id", auth.user.id).eq("plan_date", localTodayISO());
+      if (planError) throw planError;
       queryClient.removeQueries({ queryKey: ["plan"] });
       await queryClient.invalidateQueries({ queryKey: profileQuery.queryKey });
       toast.success(t("onboarding.saved"));
@@ -138,6 +141,10 @@ function Onboarding() {
                 autoComplete="off"
                 className={inputClass}
               />
+            </Field>
+            <Field id="child-interests" label={t("onboarding.interests")}>
+              <Input id="child-interests" value={interests} onChange={(e) => setInterests(e.target.value)} maxLength={500} placeholder={t("onboarding.interestsPlaceholder")} className={inputClass} />
+              <p className="text-sm text-muted-foreground">{t("onboarding.interestsHint")}</p>
             </Field>
             <Field id="birth" label={t("onboarding.birthDate")}>
               <Input

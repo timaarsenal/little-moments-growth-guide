@@ -1,0 +1,11 @@
+CREATE TABLE public.chat_threads (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL, title text NOT NULL DEFAULT '', activity_key text, created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(id,user_id));
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.chat_threads TO authenticated;
+GRANT ALL ON public.chat_threads TO service_role;
+ALTER TABLE public.chat_threads ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Own chat threads" ON public.chat_threads FOR ALL TO authenticated USING ((select auth.uid()) = user_id) WITH CHECK ((select auth.uid()) = user_id);
+ALTER TABLE public.chat_messages ADD COLUMN thread_id uuid;
+INSERT INTO public.chat_threads(user_id,title) SELECT DISTINCT user_id,'' FROM public.chat_messages;
+UPDATE public.chat_messages m SET thread_id=t.id FROM public.chat_threads t WHERE m.user_id=t.user_id AND m.thread_id IS NULL;
+ALTER TABLE public.chat_messages ADD CONSTRAINT chat_messages_thread_owner_fk FOREIGN KEY(thread_id,user_id) REFERENCES public.chat_threads(id,user_id) ON DELETE CASCADE;
+CREATE INDEX chat_messages_thread_created_idx ON public.chat_messages(thread_id,created_at);
+CREATE INDEX chat_threads_owner_created_idx ON public.chat_threads(user_id,created_at DESC);

@@ -64,6 +64,8 @@ function Profile() {
             <p className="text-muted-foreground">
               {age(ageInMonths(profile.birth_date, localTodayISO()))}
             </p>
+            <h3 className="mt-4 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
+            <p className="mt-1 break-words font-semibold">{profile.interests || t("profile.noInterests")}</p>
           </section>
 
           <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">

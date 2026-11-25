@@ -1,4 +1,4 @@
-import { ChevronDown, Clock, RotateCcw } from "lucide-react";
+import { ChevronDown, Clock, MessageCircleHeart, RotateCcw } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -21,9 +21,10 @@ interface Props {
   onSkip: () => void;
   onReact: (reaction: Reaction) => void;
   onUndo: () => void;
+  onDiscuss: () => void;
 }
 
-export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo }: Props) {
+export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss }: Props) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const style = CATEGORY_STYLE[activity.category];
@@ -56,15 +57,17 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         {activity.why}
       </p>
 
-      <button
+      <Button
         type="button"
+        variant="link"
+        size="sm"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-primary"
       >
         {open ? t("today.hide") : t("today.details")}
         <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />
-      </button>
+      </Button>
 
       {open && (
         <div className="mt-3 space-y-4 rounded-2xl bg-muted p-4">
@@ -119,15 +122,16 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
             <p className="font-bold">{t("today.howWasIt")}</p>
             <div role="radiogroup" aria-label={t("today.howWasIt")} className="mt-3 grid grid-cols-3 gap-2">
               {REACTIONS.map((r) => (
-                <button
+                <Button
                   key={r.value}
+                  variant="ghost"
                   type="button"
                   role="radio"
                   aria-checked={log?.reaction === r.value}
                   disabled={busy}
                   onClick={() => onReact(r.value)}
                   className={cn(
-                    "flex flex-col items-center gap-1 rounded-2xl border-2 py-3 text-xs font-bold transition-colors",
+                    "h-auto min-w-0 flex flex-col items-center gap-1 rounded-2xl border-2 px-1 py-3 text-xs font-bold transition-colors",
                     log?.reaction === r.value
                       ? "border-success bg-card text-foreground"
                       : "border-transparent bg-card/60 text-muted-foreground hover:bg-card",
@@ -137,7 +141,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
                     {r.emoji}
                   </span>
                   {t(r.labelKey)}
-                </button>
+                </Button>
               ))}
             </div>
             {log?.reaction && <p className="mt-3 text-sm font-semibold text-secondary-foreground">{t("today.thanks")}</p>}
@@ -158,6 +162,10 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
           </div>
         )}
       </div>
+      <Button variant="ghost" className="mt-3 w-full" onClick={onDiscuss}>
+        <MessageCircleHeart aria-hidden />
+        {t("today.discuss")}
+      </Button>
     </article>
   );
 }
