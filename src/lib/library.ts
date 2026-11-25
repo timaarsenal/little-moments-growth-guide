@@ -96,3 +96,20 @@ export function pickFromLibrary(
 
   return result;
 }
+
+const PLACE_WORDS: Record<string, string[]> = {
+  home: ["игрушк", "кубик", "подушк", "книж", "мяч"],
+  kitchen: ["кастрюл", "ложк", "крупа", "миск", "продукт", "фрукт", "овощ", "стакан", "кухн"],
+  car: ["песен", "песн", "стих", "назов", "окно", "пальч"],
+  bath: ["вод", "ванн", "губк", "пен", "плава"],
+};
+
+/** Up to 2 short indoor library activities for the child's age that suit where the parent is now. */
+export function quickIdeas(place: string, months: number): LibraryActivity[] {
+  const words = PLACE_WORDS[place] ?? [];
+  const pool = LIBRARY.filter((a) => !a.outdoor && a.duration_min <= 15 && months >= a.age_min_months - 6 && months <= a.age_max_months)
+    .sort((a, b) => a.duration_min - b.duration_min);
+  const text = (a: LibraryActivity) => [a.ru.title, ...a.ru.steps, ...a.ru.materials].join(" ").toLowerCase();
+  const matched = pool.filter((a) => words.some((w) => text(a).includes(w)));
+  return [...matched, ...pool.filter((a) => !matched.includes(a))].slice(0, 2);
+}

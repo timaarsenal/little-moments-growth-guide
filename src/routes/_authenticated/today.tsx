@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
-import { pickFromLibrary } from "@/lib/library";
+import { pickFromLibrary, quickIdeas } from "@/lib/library";
 import { ensureKazakh } from "@/lib/kazakh-fallback";
 import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
@@ -342,8 +342,11 @@ function Today() {
         </div>
         {place && (
           <ul className="mt-3 space-y-2">
-            {[1, 2].map((n) => (
-              <li key={n} className="rounded-2xl bg-card p-3 text-sm font-semibold">{t(`quick.ideas.${place}${n}`)}</li>
+            {quickIdeas(place, months).map((a) => (
+              <li key={a.id} className="rounded-2xl bg-card p-3 text-sm">
+                <p className="font-extrabold">{a[lang].title} · {t("common.minutes", { n: a.duration_min })}</p>
+                <p className="mt-1 text-muted-foreground">{a[lang].steps[0]}</p>
+              </li>
             ))}
           </ul>
         )}
