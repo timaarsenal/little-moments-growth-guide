@@ -1,6 +1,6 @@
 import type { Category, PlanItem } from "./types";
 
-/** On a "very tired" day the plan keeps at most this many activities… */
+/** On a "very tired" day the plan keeps 2 activities (1 when the day has 3 or fewer)… */
 export const LIGHT_MAX_ITEMS = 2;
 /** …each shortened to at most this many minutes. */
 export const LIGHT_MAX_MINUTES = 10;
@@ -13,7 +13,8 @@ export function lightenPlan(items: PlanItem[]): PlanItem[] {
   const ranked = [...items].sort(
     (a, b) => a.duration_min - b.duration_min || CALM_ORDER.indexOf(a.category) - CALM_ORDER.indexOf(b.category),
   );
-  const keep = new Set(ranked.slice(0, LIGHT_MAX_ITEMS).map((i) => i.key));
+  const max = items.length <= 3 ? 1 : LIGHT_MAX_ITEMS;
+  const keep = new Set(ranked.slice(0, max).map((i) => i.key));
   return items
     .filter((i) => keep.has(i.key))
     .map((i) => ({ ...i, duration_min: Math.min(i.duration_min, LIGHT_MAX_MINUTES) }));

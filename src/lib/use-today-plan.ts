@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import type { ChildProfile } from "./profile";
 import { pickFromLibrary } from "./library";
+import { ensureKazakh } from "./kazakh-fallback";
 import { getTodayPlan } from "./plan.functions";
 import { isWeekendDate, planSlots } from "./schedule";
 import type { DayPlan, LogLite } from "./types";
@@ -18,7 +19,7 @@ export function useTodayPlan(userId: string, today: string, profile: ChildProfil
       } catch (err) {
         console.error("[plan] plan request failed, using library", err);
         const slots = profile ? planSlots(profile, isWeekendDate(today)) : [];
-        return { source: "library", items: pickFromLibrary(slots, history, `${userId}:${today}`) };
+        return { source: "library", items: ensureKazakh(pickFromLibrary(slots, history, `${userId}:${today}`), Boolean(profile?.bilingual), `${userId}:${today}`) };
       }
     },
     staleTime: Infinity,

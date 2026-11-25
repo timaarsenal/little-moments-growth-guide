@@ -55,27 +55,25 @@ export const AI_PLAN_SCHEMA = {
 };
 
 const text = z.object({
-  title: z.string().trim().min(2).max(90),
-  why: z.string().trim().min(5).max(300),
-  steps: z.array(z.string().trim().min(2).max(300)).min(1).max(8),
-  materials: z.array(z.string().trim().min(1).max(80)).max(8),
+  title: z.string().trim().min(2).max(160),
+  why: z.string().trim().min(5).max(600),
+  steps: z.array(z.string().trim().min(2).max(600)).min(1).max(10),
+  materials: z.array(z.string().trim().min(1).max(160)).max(12),
 });
 
-const aiResponse = z.object({
-  activities: z.array(
-    z.object({
+const aiActivity = z.object({
       slot: z.number().int(),
       category: z.enum(CATEGORIES),
       duration_min: z.number(),
       outdoor: z.boolean().default(false),
       is_kazakh: z.boolean().default(false),
-      kazakh_words: z.array(z.object({ kz: z.string().trim().min(1).max(60), ru: z.string().trim().min(1).max(60) })).max(10).default([]),
+      kazakh_words: z.array(z.object({ kz: z.string().trim().min(1).max(80), ru: z.string().trim().min(1).max(80) })).max(10).default([]),
       interests: z.array(z.enum(INTEREST_VALUES)).max(9).default([]),
       ru: text,
       kz: text,
-    }),
-  ),
 });
+/** Each activity is validated on its own, so one odd item never throws away the whole AI plan. */
+const aiResponse = z.object({ activities: z.array(z.unknown()) });
 
 /** Child preferences the planner must honour. */
 export interface PlanPrefs {
@@ -181,7 +179,10 @@ export function parseAiPlan(raw: string, slots: Slot[], today: string, prefs: Pl
   const out = new Map<number, PlanItem>();
   const allowed = new Set<string>([...prefs.interests, ...(prefs.customInterest ? ["custom"] : [])]);
   let kazakhCount = 0;
-  for (const a of parsed.data.activities) {
+  for (const rawItem of parsed.data.activities) {
+    const one = aiActivity.safeParse(rawItem);
+    if (!one.success) continue;
+    const a = one.data;
     const slot = bySlot.get(a.slot);
     if (!slot || out.has(slot.index)) continue;
     // Never an active game right before sleep; the library fills this slot with a calm one instead.

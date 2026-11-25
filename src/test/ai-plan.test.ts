@@ -85,3 +85,17 @@ describe("what the AI is told", () => {
     expect(summary.byCategory.fine_motor.skipped).toBe(2);
   });
 });
+
+describe("bilingual and lenient AI parsing", () => {
+  it("keeps valid AI activities even when one is malformed", async () => {
+    const items = parseAiPlan(ai(act(0, "speech", 5), { slot: 1, category: "speech" }), slots, "2026-11-23");
+    expect(items?.has(0)).toBe(true);
+  });
+
+  it("adds one Kazakh activity for a bilingual family when the plan has none", async () => {
+    const { ensureKazakh } = await import("@/lib/kazakh-fallback");
+    const plan = mergeWithLibrary(slots, null, [], "seed").items;
+    expect(ensureKazakh(plan, true, "s").filter((i) => i.kazakh)).toHaveLength(1);
+    expect(ensureKazakh(plan, false, "s").some((i) => i.kazakh)).toBe(false);
+  });
+});

@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 import { ageInMonths, shiftISO } from "./age";
 import { AI_INSTRUCTIONS, AI_PLAN_SCHEMA, buildAiInput, mergeWithLibrary, parseAiPlan, readStoredPlan, type PlanPrefs } from "./ai-plan";
+import { ensureKazakh } from "./kazakh-fallback";
 import { DEFAULT_CITY, fetchWeather, formatTemp, isCity, weatherReason } from "./weather";
 import { isWeekendDate, planSlots, type Slot } from "./schedule";
 import type { DayPlan, LogLite } from "./types";
@@ -105,7 +106,8 @@ export const getTodayPlan = createServerFn({ method: "POST" })
       weather,
     };
     const aiItems = await askAi(ageInMonths(profile.birth_date, today), slots, logs, weekend, today, prefs);
-    const plan = mergeWithLibrary(slots, aiItems, logs, `${userId}:${today}`);
+    const merged = mergeWithLibrary(slots, aiItems, logs, `${userId}:${today}`);
+    const plan = { ...merged, items: ensureKazakh(merged.items, profile.bilingual, `${userId}:${today}`) };
 
     // Keep the first stored plan if another request for the same day finished first.
     const { error: saveError } = await supabase.from("daily_plans").upsert(

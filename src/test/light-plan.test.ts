@@ -40,6 +40,10 @@ describe("lightenPlan (parent answered 😩)", () => {
 
   it("prefers calm activities over a walk when durations tie", () => {
     const tie = [item("a", "gross_motor", 5, "07:30"), item("b", "speech", 5, "08:00"), item("c", "emotions_social", 5, "19:00")];
-    expect(lightenPlan(tie).map((i) => i.key)).toEqual(["b", "c"]);
+    expect(lightenPlan([...tie, item("d", "fine_motor", 20, "20:00")]).map((i) => i.key)).toEqual(["b", "c"]);
+  });
+
+  it("shrinks a 3-activity day to 1", () => {
+    expect(lightenPlan(day.slice(0, 3))).toHaveLength(1);
   });
 });

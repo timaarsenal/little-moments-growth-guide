@@ -14,6 +14,7 @@ import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
 import { pickFromLibrary } from "@/lib/library";
+import { ensureKazakh } from "@/lib/kazakh-fallback";
 import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
 import { profileQuery } from "@/lib/profile";
@@ -78,7 +79,7 @@ function Today() {
         // Server unreachable: build the day from the built-in library right here.
         console.error("[today] plan request failed, using library", err);
         const slots = profile ? planSlots(profile, isWeekendDate(today)) : [];
-        return { source: "library", items: pickFromLibrary(slots, history, `${user.id}:${today}`) };
+        return { source: "library", items: ensureKazakh(pickFromLibrary(slots, history, `${user.id}:${today}`), Boolean(profile?.bilingual), `${user.id}:${today}`) };
       }
     },
     staleTime: Infinity,
@@ -94,9 +95,9 @@ function Today() {
     ? t(`weather.${reason}`, { temp: formatTemp(reason === "hot" ? weatherQ.data.max : weatherQ.data.min) })
     : undefined;
   const plan = useMemo(() => {
-    const items = applyWeather(planQuery.data?.items ?? [], reason);
+    const items = applyWeather(ensureKazakh(planQuery.data?.items ?? [], Boolean(profile?.bilingual), `${user.id}:${today}`), reason);
     return (mood === "tired" ? lightenPlan(items) : items).map((item) => localize(item, lang));
-  }, [planQuery.data, lang, mood, reason]);
+  }, [planQuery.data, lang, mood, reason, profile?.bilingual, user.id, today]);
 
   const { data: rituals = [] } = useQuery(ritualsQuery(user.id));
   const checksKey = ritualChecksQuery(user.id, today);
