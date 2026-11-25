@@ -21,6 +21,11 @@ export interface PlannedActivity {
   materials: string[];
   window: WindowKind;
   start_time: string;
+  kazakh?: boolean;
+  kz_words?: KazakhWord[];
+  interests?: string[];
+  /** Set when an outdoor activity was swapped for a home game because of the weather. */
+  movedIndoors?: boolean;
 }
 
 export interface LogLite {
@@ -44,8 +49,24 @@ export interface LocalizedText {
 }
 
 /** One planned activity with both languages, so switching RU/KZ never changes the day's plan. */
+export const INTEREST_TAGS = ["cars", "animals", "music", "ball", "books", "water", "blocks", "dolls"] as const;
+export type InterestTag = (typeof INTEREST_TAGS)[number];
+
+export interface KazakhWord {
+  kz: string;
+  ru: string;
+}
+
 export interface PlanItem {
   key: string;
+  /** Happens outside; swapped for a home game in bad weather. */
+  outdoor?: boolean;
+  /** A Kazakh-language activity for bilingual families. */
+  kazakh?: boolean;
+  kz_words?: KazakhWord[];
+  /** Child interests the activity is built around. */
+  interests?: string[];
+  movedIndoors?: boolean;
   category: Category;
   duration_min: number;
   window: WindowKind;
@@ -71,5 +92,9 @@ export function localize(item: PlanItem, lang: Lang): PlannedActivity {
     why: text.why,
     steps: text.steps,
     materials: text.materials,
+    ...(item.kazakh ? { kazakh: true } : {}),
+    ...(item.kz_words?.length ? { kz_words: item.kz_words } : {}),
+    ...(item.interests?.length ? { interests: item.interests } : {}),
+    ...(item.movedIndoors ? { movedIndoors: true } : {}),
   };
 }

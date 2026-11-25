@@ -6,13 +6,13 @@
 - [x] Today screen with library activities placed in free windows, avoiding naps
 - [x] AI activity generation (library stays as fallback)
 - [x] Done/Skip + reaction logging
-- [ ] Progress screen: weekly chart + milestones (src/data/milestones.json, CDC source)
+- [x] Progress screen: weekly chart + milestones (CDC source)
 - [ ] Profile screen (basic view/edit/sign-out done; polish later)
 - [x] RU/KZ translations (ru.json, kz.json) + switcher
 - [x] Disclaimer footer + bottom nav
-- [ ] 10. Pediatrician signals: isRedFlag + discuss-after age in milestones, calm message + "Online consultation (soon)"
-- [ ] 9. Bilingual child setting: 1–2 Kazakh activities/day, 🇰🇿 badge, weekly Kazakh words counter
-- [ ] 8. Weather (Open-Meteo, city in profile, default Astana): outdoor → indoor swap, widget on Today
-- [ ] 7. "Minutes together": today next to progress ring, weekly chart + comparison, weekly share card
-- [ ] 5. Rituals (anchors, templates, custom, checkmarks on Today) + Moments (private photos, consent, album, delete)
-- [ ] 3. Interests multi-select in onboarding/profile, AI uses them, "With interests: …" badge, re-plan on change
+- [x] 10. Pediatrician signals: isRedFlag + discuss-after age in milestones, calm message + "Online consultation (soon)"
+- [x] 9. Bilingual child setting: 1–2 Kazakh activities/day, 🇰🇿 badge, weekly Kazakh words counter
+- [x] 8. Weather (Open-Meteo, city in profile, default Astana): outdoor → indoor swap, widget on Today
+- [x] 7. "Minutes together": today next to progress ring, weekly chart + comparison, weekly share card
+- [x] 5. Rituals (anchors, templates, custom, checkmarks on Today) + Moments (private photos, consent, album, delete)
+- [x] 3. Interests multi-select in onboarding/profile, AI uses them, "With interests: …" badge, re-plan on change

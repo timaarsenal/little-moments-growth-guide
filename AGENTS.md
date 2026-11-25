@@ -37,3 +37,6 @@ use the editor.
 - Built-in content (`src/data/activities.json`, `src/data/milestones.json`) is bilingual JSON with `ru`/`kz` fields; milestones keep a per-item `source` pointing at CDC "Learn the Signs. Act Early.".
 - Day planning is pure and tested: `src/lib/schedule.ts` turns the profile into nap-safe slots; `src/lib/ai-plan.ts` validates the AI answer and fills gaps from `src/lib/library.ts`; today's own marks are excluded from picking so the plan stays stable during the day.
 - Today's plan comes from `getTodayPlan` (`src/lib/plan.functions.ts`): AI first, library on any AI failure, stored once per day in `daily_plans` with both RU and KZ text (`language = 'both'`) so the cards never change mid-day or on a language switch; saving the profile deletes today's row to re-plan.
+- Weather, minutes, streaks, Kazakh-word counts and pediatrician signals are pure helpers (`src/lib/{weather,minutes,kazakh-words,milestones}.ts`) covered by `src/test/features.test.ts`; screens only render them, so rules stay testable.
+- Bad-weather swaps are applied at display time over the stored daily plan (`applyWeather`), and the plan generator also receives weather, so cached plans stay stable while the weather can change.
+- Moment photos live in the private `moments` bucket under `<user_id>/…`, shown via short-lived signed URLs; deleting removes the file and the row.

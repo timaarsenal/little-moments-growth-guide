@@ -124,15 +124,19 @@ export type Database = {
       child_profiles: {
         Row: {
           bed_time: string
+          bilingual: boolean
           birth_date: string
           child_name: string
+          city: string
           created_at: string
           evening_minutes: number
           id: string
+          interest_tags: string[]
           interests: string
           morning_minutes: number
           nap_end: string
           nap_start: string
+          photo_consent_at: string | null
           updated_at: string
           user_id: string
           wake_time: string
@@ -140,15 +144,19 @@ export type Database = {
         }
         Insert: {
           bed_time?: string
+          bilingual?: boolean
           birth_date: string
           child_name: string
+          city?: string
           created_at?: string
           evening_minutes?: number
           id?: string
+          interest_tags?: string[]
           interests?: string
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
+          photo_consent_at?: string | null
           updated_at?: string
           user_id: string
           wake_time?: string
@@ -156,15 +164,19 @@ export type Database = {
         }
         Update: {
           bed_time?: string
+          bilingual?: boolean
           birth_date?: string
           child_name?: string
+          city?: string
           created_at?: string
           evening_minutes?: number
           id?: string
+          interest_tags?: string[]
           interests?: string
           morning_minutes?: number
           nap_end?: string
           nap_start?: string
+          photo_consent_at?: string | null
           updated_at?: string
           user_id?: string
           wake_time?: string
@@ -207,18 +219,51 @@ export type Database = {
           created_at: string
           id: string
           milestone_id: string
+          status: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           milestone_id: string
+          status?: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           milestone_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      moments: {
+        Row: {
+          activity_key: string
+          activity_title: string
+          created_at: string
+          id: string
+          photo_path: string
+          plan_date: string
+          user_id: string
+        }
+        Insert: {
+          activity_key: string
+          activity_title: string
+          created_at?: string
+          id?: string
+          photo_path: string
+          plan_date: string
+          user_id: string
+        }
+        Update: {
+          activity_key?: string
+          activity_title?: string
+          created_at?: string
+          id?: string
+          photo_path?: string
+          plan_date?: string
           user_id?: string
         }
         Relationships: []
@@ -243,6 +288,71 @@ export type Database = {
           id?: string
           mood?: string
           mood_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ritual_checks: {
+        Row: {
+          check_date: string
+          created_at: string
+          id: string
+          minutes: number
+          ritual_id: string
+          user_id: string
+        }
+        Insert: {
+          check_date: string
+          created_at?: string
+          id?: string
+          minutes?: number
+          ritual_id: string
+          user_id: string
+        }
+        Update: {
+          check_date?: string
+          created_at?: string
+          id?: string
+          minutes?: number
+          ritual_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ritual_checks_ritual_id_fkey"
+            columns: ["ritual_id"]
+            isOneToOne: false
+            referencedRelation: "rituals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rituals: {
+        Row: {
+          anchor: string
+          created_at: string
+          id: string
+          minutes: number
+          template_key: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          anchor: string
+          created_at?: string
+          id?: string
+          minutes?: number
+          template_key?: string | null
+          title?: string
+          user_id: string
+        }
+        Update: {
+          anchor?: string
+          created_at?: string
+          id?: string
+          minutes?: number
+          template_key?: string | null
+          title?: string
           user_id?: string
         }
         Relationships: []

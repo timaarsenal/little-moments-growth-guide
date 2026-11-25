@@ -8,7 +8,9 @@
       "area": "social",
       "ru": "Играет с вами в игры, например в «ладушки»",
       "kz": "Сізбен «алақай» сияқты ойындар ойнайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m12-02",
@@ -16,7 +18,9 @@
       "area": "language",
       "ru": "Машет рукой «пока-пока»",
       "kz": "«Сау бол» деп қол бұлғайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": true,
+      "discuss_after_months": 12
     },
     {
       "id": "m12-03",
@@ -24,7 +28,9 @@
       "area": "language",
       "ru": "Называет родителя «мама», «папа» или особым словом",
       "kz": "Ата-анасын «мама», «папа» немесе ерекше сөзбен атайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": true,
+      "discuss_after_months": 12
     },
     {
       "id": "m12-04",
@@ -32,7 +38,9 @@
       "area": "language",
       "ru": "Понимает слово «нельзя» (замирает, когда слышит его)",
       "kz": "«Болмайды» сөзін түсінеді (естігенде тоқтай қалады)",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m12-05",
@@ -40,7 +48,9 @@
       "area": "cognitive",
       "ru": "Кладёт предмет в ёмкость, например кубик в чашку",
       "kz": "Затты ыдысқа салады, мысалы текшені кесеге",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m12-06",
@@ -48,7 +58,9 @@
       "area": "cognitive",
       "ru": "Ищет вещи, которые вы спрятали у него на глазах",
       "kz": "Көз алдында жасырған затты іздейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m12-07",
@@ -56,7 +68,9 @@
       "area": "movement",
       "ru": "Встаёт, держась за опору",
       "kz": "Сүйеніп тұрып тұрады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": true,
+      "discuss_after_months": 12
     },
     {
       "id": "m12-08",
@@ -64,7 +78,9 @@
       "area": "movement",
       "ru": "Ходит, держась за мебель",
       "kz": "Жиһазға сүйеніп жүреді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m12-09",
@@ -72,7 +88,9 @@
       "area": "movement",
       "ru": "Берёт мелкие предметы большим и указательным пальцами",
       "kz": "Ұсақ заттарды бас бармақ пен сұқ саусақпен алады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 1 year: https://www.cdc.gov/act-early/milestones/1-year.html",
+      "isRedFlag": false,
+      "discuss_after_months": 15
     },
     {
       "id": "m15-01",
@@ -80,7 +98,9 @@
       "area": "social",
       "ru": "Подражает другим детям в игре",
       "kz": "Ойында басқа балаларға еліктейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-02",
@@ -88,7 +108,9 @@
       "area": "social",
       "ru": "Показывает вам понравившийся предмет",
       "kz": "Ұнаған затын сізге көрсетеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-03",
@@ -96,7 +118,9 @@
       "area": "social",
       "ru": "Хлопает в ладоши от радости, обнимает игрушку",
       "kz": "Қуанғанда қол шапалақтайды, ойыншықты құшақтайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-04",
@@ -104,7 +128,9 @@
       "area": "language",
       "ru": "Говорит одно-два слова кроме «мама»/«папа»",
       "kz": "«Мама»/«папа»-дан басқа бір-екі сөз айтады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 15
     },
     {
       "id": "m15-05",
@@ -112,7 +138,9 @@
       "area": "language",
       "ru": "Смотрит на знакомый предмет, когда вы его называете",
       "kz": "Таныс затты атағанда соған қарайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-06",
@@ -120,7 +148,9 @@
       "area": "language",
       "ru": "Показывает пальцем, чтобы попросить что-то",
       "kz": "Бірдеңе сұрау үшін саусағымен көрсетеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 15
     },
     {
       "id": "m15-07",
@@ -128,7 +158,9 @@
       "area": "cognitive",
       "ru": "Пытается использовать вещи по назначению: телефон, чашку, книгу",
       "kz": "Заттарды мақсатына сай қолдануға тырысады: телефон, кесе, кітап",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-08",
@@ -136,7 +168,9 @@
       "area": "cognitive",
       "ru": "Ставит один небольшой предмет на другой",
       "kz": "Бір кішкене затты екіншісінің үстіне қояды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m15-09",
@@ -144,7 +178,9 @@
       "area": "movement",
       "ru": "Делает несколько шагов самостоятельно",
       "kz": "Өз бетімен бірнеше қадам жасайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 15
     },
     {
       "id": "m15-10",
@@ -152,7 +188,9 @@
       "area": "movement",
       "ru": "Ест пальцами сам",
       "kz": "Саусақтарымен өзі тамақ жейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 15 months: https://www.cdc.gov/act-early/milestones/15-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 18
     },
     {
       "id": "m18-01",
@@ -160,7 +198,9 @@
       "area": "social",
       "ru": "Отходит от вас, но оглядывается, что вы рядом",
       "kz": "Сізден алыстайды, бірақ жаныңда екеніңізді тексеріп қарайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-02",
@@ -168,7 +208,9 @@
       "area": "social",
       "ru": "Показывает пальцем на что-то интересное",
       "kz": "Қызық нәрсені саусағымен көрсетеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 18
     },
     {
       "id": "m18-03",
@@ -176,7 +218,9 @@
       "area": "social",
       "ru": "Помогает одевать себя, просовывая руку в рукав",
       "kz": "Киінгенде көмектеседі, қолын жеңге салады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-04",
@@ -184,7 +228,9 @@
       "area": "language",
       "ru": "Говорит три и более слов кроме «мама»/«папа»",
       "kz": "«Мама»/«папа»-дан басқа үш және одан көп сөз айтады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 18
     },
     {
       "id": "m18-05",
@@ -192,7 +238,9 @@
       "area": "language",
       "ru": "Выполняет простую просьбу без жеста, например «дай игрушку»",
       "kz": "Ымсыз қарапайым өтінішті орындайды, мысалы «ойыншықты бер»",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-06",
@@ -200,7 +248,9 @@
       "area": "cognitive",
       "ru": "Повторяет за вами домашние дела, например подметает",
       "kz": "Үй шаруасын сізге қарап қайталайды, мысалы сыпырады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-07",
@@ -208,7 +258,9 @@
       "area": "cognitive",
       "ru": "Играет с игрушками простым способом, например катает машинку",
       "kz": "Ойыншықтармен қарапайым ойнайды, мысалы көлікті домалатады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-08",
@@ -216,7 +268,9 @@
       "area": "movement",
       "ru": "Ходит без опоры",
       "kz": "Сүйенбей жүреді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 18
     },
     {
       "id": "m18-09",
@@ -224,7 +278,9 @@
       "area": "movement",
       "ru": "Черкает карандашом",
       "kz": "Қарындашпен сызғылайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-10",
@@ -232,7 +288,9 @@
       "area": "movement",
       "ru": "Пытается есть ложкой",
       "kz": "Қасықпен жеуге тырысады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m18-11",
@@ -240,7 +298,9 @@
       "area": "movement",
       "ru": "Залезает на диван и слезает без помощи",
       "kz": "Диванға көмексіз шығып, түседі",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 18 months: https://www.cdc.gov/act-early/milestones/18-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 21
     },
     {
       "id": "m24-01",
@@ -248,7 +308,9 @@
       "area": "social",
       "ru": "Замечает, когда другим больно или грустно",
       "kz": "Басқалардың ауырғанын не мұңайғанын байқайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-02",
@@ -256,7 +318,9 @@
       "area": "social",
       "ru": "Смотрит на ваше лицо в новой ситуации, чтобы понять, как реагировать",
       "kz": "Жаңа жағдайда қалай әрекет ету керегін түсіну үшін бетіңізге қарайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-03",
@@ -264,7 +328,9 @@
       "area": "language",
       "ru": "Показывает картинки в книге по вашей просьбе",
       "kz": "Сіз сұрағанда кітаптағы суретті көрсетеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-04",
@@ -272,7 +338,9 @@
       "area": "language",
       "ru": "Говорит фразы из двух слов, например «ещё молока»",
       "kz": "Екі сөзден тұратын сөйлем айтады, мысалы «тағы сүт»",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": true,
+      "discuss_after_months": 24
     },
     {
       "id": "m24-05",
@@ -280,7 +348,9 @@
       "area": "language",
       "ru": "Показывает хотя бы две части тела по просьбе",
       "kz": "Сұрағанда дененің кемінде екі мүшесін көрсетеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": true,
+      "discuss_after_months": 24
     },
     {
       "id": "m24-06",
@@ -288,7 +358,9 @@
       "area": "language",
       "ru": "Использует жесты: посылает воздушный поцелуй, кивает",
       "kz": "Ым қолданады: ауамен сүйеді, басын изейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-07",
@@ -296,7 +368,9 @@
       "area": "cognitive",
       "ru": "Держит предмет одной рукой и действует другой",
       "kz": "Затты бір қолымен ұстап, екіншісімен әрекет етеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-08",
@@ -304,7 +378,9 @@
       "area": "cognitive",
       "ru": "Пробует нажимать кнопки, крутить ручки и выключатели",
       "kz": "Түймелерді басып, тұтқалар мен ажыратқыштарды бұрап көреді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-09",
@@ -312,7 +388,9 @@
       "area": "cognitive",
       "ru": "Играет сразу с несколькими игрушками",
       "kz": "Бір уақытта бірнеше ойыншықпен ойнайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-10",
@@ -320,7 +398,9 @@
       "area": "movement",
       "ru": "Пинает мяч",
       "kz": "Допты тебеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-11",
@@ -328,7 +408,9 @@
       "area": "movement",
       "ru": "Бегает",
       "kz": "Жүгіреді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": true,
+      "discuss_after_months": 24
     },
     {
       "id": "m24-12",
@@ -336,7 +418,9 @@
       "area": "movement",
       "ru": "Поднимается на несколько ступенек шагом",
       "kz": "Бірнеше баспалдаққа жаяу көтеріледі",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m24-13",
@@ -344,7 +428,9 @@
       "area": "movement",
       "ru": "Ест ложкой",
       "kz": "Қасықпен жейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 2 years: https://www.cdc.gov/act-early/milestones/2-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 27
     },
     {
       "id": "m30-01",
@@ -352,7 +438,9 @@
       "area": "social",
       "ru": "Играет рядом с другими детьми и иногда вместе с ними",
       "kz": "Басқа балалардың жанында, кейде бірге ойнайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-02",
@@ -360,7 +448,9 @@
       "area": "social",
       "ru": "Говорит «Посмотри на меня!», показывая, что умеет",
       "kz": "Не істей алатынын көрсетіп, «Маған қара!» дейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-03",
@@ -368,7 +458,9 @@
       "area": "social",
       "ru": "Следует простым привычным правилам, например убирает игрушки",
       "kz": "Қарапайым тәртіпті орындайды, мысалы ойыншықтарын жинайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-04",
@@ -376,7 +468,9 @@
       "area": "language",
       "ru": "Говорит около 50 слов",
       "kz": "50-ге жуық сөз айтады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 30
     },
     {
       "id": "m30-05",
@@ -384,7 +478,9 @@
       "area": "language",
       "ru": "Строит фразы из двух слов с глаголом: «Собачка бежит»",
       "kz": "Етістікпен екі сөзді сөйлем құрайды: «Күшік жүгіріп барады»",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": true,
+      "discuss_after_months": 30
     },
     {
       "id": "m30-06",
@@ -392,7 +488,9 @@
       "area": "language",
       "ru": "Называет предметы в книге, когда вы спрашиваете",
       "kz": "Сұрағанда кітаптағы заттарды атайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-07",
@@ -400,7 +498,9 @@
       "area": "language",
       "ru": "Говорит «я», «мне», «мы»",
       "kz": "«Мен», «маған», «біз» деп айтады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-08",
@@ -408,7 +508,9 @@
       "area": "cognitive",
       "ru": "Использует предметы в воображаемой игре: кормит куклу кубиком",
       "kz": "Қиял ойынында заттарды қолданады: қуыршаққа текшені «жегізеді»",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-09",
@@ -416,7 +518,9 @@
       "area": "cognitive",
       "ru": "Выполняет инструкции из двух шагов",
       "kz": "Екі қадамды нұсқауды орындайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-10",
@@ -424,7 +528,9 @@
       "area": "cognitive",
       "ru": "Знает хотя бы один цвет",
       "kz": "Кемінде бір түсті біледі",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-11",
@@ -432,7 +538,9 @@
       "area": "movement",
       "ru": "Откручивает крышки и поворачивает дверные ручки",
       "kz": "Қақпақтарды бұрап ашады, есік тұтқасын бұрайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-12",
@@ -440,7 +548,9 @@
       "area": "movement",
       "ru": "Прыгает на двух ногах",
       "kz": "Екі аяқпен секіреді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m30-13",
@@ -448,7 +558,9 @@
       "area": "movement",
       "ru": "Листает книгу по одной странице",
       "kz": "Кітапты бір-бір беттен парақтайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 30 months: https://www.cdc.gov/act-early/milestones/30-months.html",
+      "isRedFlag": false,
+      "discuss_after_months": 33
     },
     {
       "id": "m36-01",
@@ -456,7 +568,9 @@
       "area": "social",
       "ru": "Успокаивается в течение 10 минут после вашего ухода, например в саду",
       "kz": "Сіз кеткен соң 10 минут ішінде тынышталады, мысалы балабақшада",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-02",
@@ -464,7 +578,9 @@
       "area": "social",
       "ru": "Замечает других детей и присоединяется к их игре",
       "kz": "Басқа балаларды байқап, ойынына қосылады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-03",
@@ -472,7 +588,9 @@
       "area": "language",
       "ru": "Поддерживает разговор хотя бы из двух реплик",
       "kz": "Кемінде екі реплика алмасып сөйлеседі",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": true,
+      "discuss_after_months": 36
     },
     {
       "id": "m36-04",
@@ -480,7 +598,9 @@
       "area": "language",
       "ru": "Задаёт вопросы «кто?», «что?», «где?», «почему?»",
       "kz": "«Кім?», «не?», «қайда?», «неге?» деп сұрайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-05",
@@ -488,7 +608,9 @@
       "area": "language",
       "ru": "Называет своё имя, когда спрашивают",
       "kz": "Сұрағанда өз атын айтады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-06",
@@ -496,7 +618,9 @@
       "area": "language",
       "ru": "Говорит достаточно понятно для окружающих большую часть времени",
       "kz": "Көбіне айналасындағыларға түсінікті сөйлейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": true,
+      "discuss_after_months": 36
     },
     {
       "id": "m36-07",
@@ -504,7 +628,9 @@
       "area": "cognitive",
       "ru": "Рисует круг, если вы покажете как",
       "kz": "Көрсетсеңіз, шеңбер сала алады",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-08",
@@ -512,7 +638,9 @@
       "area": "cognitive",
       "ru": "Не трогает горячее, если его предупредили",
       "kz": "Ескерткенде ыстық затты ұстамайды",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-09",
@@ -520,7 +648,9 @@
       "area": "movement",
       "ru": "Нанизывает крупные бусины или макароны",
       "kz": "Ірі моншақ не макарон тізеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-10",
@@ -528,7 +658,9 @@
       "area": "movement",
       "ru": "Надевает некоторые вещи сам",
       "kz": "Кейбір киімін өзі киеді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     },
     {
       "id": "m36-11",
@@ -536,7 +668,10 @@
       "area": "movement",
       "ru": "Ест вилкой",
       "kz": "Шанышқымен жейді",
-      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html"
+      "source": "CDC «Learn the Signs. Act Early.» — Milestones by 3 years: https://www.cdc.gov/act-early/milestones/3-years.html",
+      "isRedFlag": false,
+      "discuss_after_months": 39
     }
-  ]
+  ],
+  "red_flag_note": "isRedFlag marks key CDC milestones; discuss_after_months is the age after which a missing skill is worth raising with the pediatrician at the next visit (CDC: talk with the doctor if the child is not meeting milestones for their age)."
 }

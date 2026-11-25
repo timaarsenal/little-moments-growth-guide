@@ -4,7 +4,8 @@ import { GatewayError, generateResponse } from "@lovable.dev/ai-gateway";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
 import { ageInMonths, shiftISO } from "./age";
-import { AI_INSTRUCTIONS, AI_PLAN_SCHEMA, buildAiInput, mergeWithLibrary, parseAiPlan, readStoredPlan } from "./ai-plan";
+import { AI_INSTRUCTIONS, AI_PLAN_SCHEMA, buildAiInput, mergeWithLibrary, parseAiPlan, readStoredPlan, type PlanPrefs } from "./ai-plan";
+import { DEFAULT_CITY, fetchWeather, formatTemp, isCity, weatherReason } from "./weather";
 import { isWeekendDate, planSlots, type Slot } from "./schedule";
 import type { DayPlan, LogLite } from "./types";
 
@@ -13,13 +14,13 @@ const PLAN_LANGUAGE = "both";
 const HISTORY_DAYS = 30;
 const AI_TIMEOUT_MS = 60_000;
 
-async function askAi(ageMonths: number, slots: Slot[], history: LogLite[], weekend: boolean, today: string) {
+async function askAi(ageMonths: number, slots: Slot[], history: LogLite[], weekend: boolean, today: string, prefs: PlanPrefs) {
   try {
     const response = await generateResponse(
       {
         model: "openai/gpt-6-astra",
         instructions: AI_INSTRUCTIONS,
-        input: buildAiInput(ageMonths, slots, history, weekend),
+        input: buildAiInput(ageMonths, slots, history, weekend, prefs),
         reasoning: { effort: "low" },
         text: { format: { type: "json_schema", name: "day_plan", schema: AI_PLAN_SCHEMA, strict: true } },
       },
@@ -32,7 +33,7 @@ async function askAi(ageMonths: number, slots: Slot[], history: LogLite[], weeke
         if (part.type === "output_text") raw += part.text;
       }
     }
-    const items = parseAiPlan(raw, slots, today);
+    const items = parseAiPlan(raw, slots, today, prefs);
     if (!items) console.error("[plan] AI returned an unusable plan", { status: response.status, id: response.id });
     return items;
   } catch (err) {
@@ -89,7 +90,21 @@ export const getTodayPlan = createServerFn({ method: "POST" })
       .order("plan_date", { ascending: false });
     if (logsError) throw logsError;
 
-    const aiItems = await askAi(ageInMonths(profile.birth_date, today), slots, logs, weekend, today);
+    let weather: string | null = null;
+    try {
+      const w = await fetchWeather(isCity(profile.city) ? profile.city : DEFAULT_CITY);
+      const reason = weatherReason(w);
+      if (reason) weather = `stay home: ${reason}, ${formatTemp(reason === "hot" ? w.max : w.min)}`;
+    } catch (err) {
+      console.error("[plan] weather unavailable", err);
+    }
+    const prefs: PlanPrefs = {
+      interests: profile.interest_tags,
+      customInterest: profile.interests.trim(),
+      bilingual: profile.bilingual,
+      weather,
+    };
+    const aiItems = await askAi(ageInMonths(profile.birth_date, today), slots, logs, weekend, today, prefs);
     const plan = mergeWithLibrary(slots, aiItems, logs, `${userId}:${today}`);
 
     // Keep the first stored plan if another request for the same day finished first.

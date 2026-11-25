@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { BookOpen, Loader2, Sparkles } from "lucide-react";
+import { BookOpen, Check, CloudSun, Loader2, Sparkles } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { ActivityCard } from "@/components/balapan/ActivityCard";
 import { AppShell } from "@/components/balapan/AppShell";
+import { MomentButton } from "@/components/balapan/MomentButton";
+import { WeeklySummary } from "@/components/balapan/WeeklySummary";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +18,10 @@ import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
 import { profileQuery } from "@/lib/profile";
 import { lightenPlan } from "@/lib/light-plan";
+import { weekTotals } from "@/lib/minutes";
+import { isAnchor, ritualChecksQuery, ritualTitle, ritualsQuery, type Ritual } from "@/lib/rituals";
+import { statsQuery } from "@/lib/stats";
+import { DEFAULT_CITY, applyWeather, fetchWeather, formatTemp, isCity, weatherReason } from "@/lib/weather";
 import { MOODS, moodQuery, type Mood } from "@/lib/mood";
 import { isWeekendDate, planSlots } from "@/lib/schedule";
 import { localize, type DayPlan, type LogLite, type PlannedActivity, type Reaction } from "@/lib/types";
@@ -80,10 +86,40 @@ function Today() {
   const source = planQuery.data?.source ?? "library";
   const moodKey = moodQuery(user.id, today);
   const { data: mood } = useQuery(moodKey);
+  const city = profile && isCity(profile.city) ? profile.city : DEFAULT_CITY;
+  const weatherQ = useQuery({ queryKey: ["weather", city], queryFn: () => fetchWeather(city), staleTime: 30 * 60_000, retry: 1 });
+  const reason = weatherQ.data ? weatherReason(weatherQ.data) : null;
+  const weatherNote = weatherQ.data && reason
+    ? t(`weather.${reason}`, { temp: formatTemp(reason === "hot" ? weatherQ.data.max : weatherQ.data.min) })
+    : undefined;
   const plan = useMemo(() => {
-    const items = planQuery.data?.items ?? [];
+    const items = applyWeather(planQuery.data?.items ?? [], reason);
     return (mood === "tired" ? lightenPlan(items) : items).map((item) => localize(item, lang));
-  }, [planQuery.data, lang, mood]);
+  }, [planQuery.data, lang, mood, reason]);
+
+  const { data: rituals = [] } = useQuery(ritualsQuery(user.id));
+  const checksKey = ritualChecksQuery(user.id, today);
+  const { data: checks = [] } = useQuery(checksKey);
+  const checkedToday = new Set(checks.filter((c) => c.check_date === today).map((c) => c.ritual_id));
+  const toggleRitual = useMutation({
+    mutationFn: async (r: Ritual) => {
+      if (checkedToday.has(r.id)) {
+        const { error } = await supabase.from("ritual_checks").delete().eq("ritual_id", r.id).eq("check_date", today);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("ritual_checks").insert({ user_id: user.id, ritual_id: r.id, check_date: today, minutes: r.minutes });
+        if (error) throw error;
+      }
+    },
+    onSettled: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["ritual-checks"] }),
+      queryClient.invalidateQueries({ queryKey: ["stats"] }),
+    ]),
+    onError: (err) => toast.error(t("common.error", { message: err instanceof Error ? err.message : String(err) })),
+  });
+  const isSunday = new Date(`${today}T12:00:00`).getDay() === 0;
+  const { data: stats } = useQuery({ ...statsQuery(user.id, today), enabled: isSunday });
+  const weekMinutes = stats ? (weekTotals(stats.logs, checks, today, 1)[0] ?? 0) : 0;
 
   const setMood = useMutation({
     mutationFn: async (value: Mood | null) => {
@@ -146,16 +182,37 @@ function Today() {
       if (ctx?.previous) queryClient.setQueryData(logsKey.queryKey, ctx.previous);
       toast.error(t("common.error", { message: err instanceof Error ? err.message : String(err) }));
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: logsKey.queryKey }),
+    onSettled: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: logsKey.queryKey }),
+      queryClient.invalidateQueries({ queryKey: ["stats"] }),
+    ]),
   });
 
   if (!profile) return null;
   const months = ageInMonths(profile.birth_date, today);
   const doneCount = plan.filter((a) => todayLogs.get(a.key)?.status === "done").length;
+  const ritualsDone = rituals.filter((r) => checkedToday.has(r.id));
+  const minutesToday =
+    plan.filter((a) => todayLogs.get(a.key)?.status === "done").reduce((s, a) => s + a.duration_min, 0) +
+    ritualsDone.reduce((s, r) => s + r.minutes, 0);
+  const ringTotal = plan.length + rituals.length;
+  const ringDone = doneCount + ritualsDone.length;
 
   return (
     <AppShell>
-      <h1 className="mt-2 text-3xl font-bold">{t("today.greeting")}</h1>
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">{t("today.greeting")}</h1>
+        <div className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-bold shadow-soft" aria-label={t("weather.label")}>
+          <CloudSun className="size-4 text-primary" aria-hidden />
+          {weatherQ.data ? (
+            <span>{formatTemp(weatherQ.data.now)} · {t(`cities.${city}`)}</span>
+          ) : weatherQ.isError ? (
+            <span className="text-muted-foreground">{t("weather.unavailable")}</span>
+          ) : (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          )}
+        </div>
+      </div>
       <div className="mt-4 flex items-center gap-3 rounded-3xl bg-card p-4 shadow-soft">
         <span aria-hidden className="grid size-14 place-items-center rounded-full bg-accent text-3xl">
           🧒
@@ -226,15 +283,51 @@ function Today() {
               {t(source === "ai" ? "today.ai" : "today.library")}
             </span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted" aria-hidden>
-            <div
-              className="h-full rounded-full bg-success transition-all"
-              style={{ width: `${(doneCount / plan.length) * 100}%` }}
-            />
+          <div className="mt-3 flex items-center gap-4 rounded-3xl bg-card p-4 shadow-soft">
+            <ProgressRing value={ringTotal ? ringDone / ringTotal : 0} />
+            <div className="min-w-0">
+              <p className="text-2xl font-bold text-primary">{t("minutes.today", { n: minutesToday })}</p>
+              <p className="text-sm font-semibold text-muted-foreground">{t("today.summary", { done: doneCount, total: plan.length })}</p>
+            </div>
           </div>
-          <p className="mt-1 text-sm font-semibold text-muted-foreground">
-            {t("today.summary", { done: doneCount, total: plan.length })}
-          </p>
+
+          <section className="mt-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold">{t("rituals.today")}</h2>
+              <Link to="/rituals" className="text-sm font-bold text-primary underline">{t("rituals.setup")}</Link>
+            </div>
+            {rituals.length === 0 ? (
+              <p className="mt-2 rounded-2xl border-2 border-dashed border-border p-3 text-sm font-semibold text-muted-foreground">{t("rituals.empty")}</p>
+            ) : (
+              <ul className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1">
+                {rituals.map((r) => {
+                  const on = checkedToday.has(r.id);
+                  return (
+                    <li key={r.id} className="shrink-0">
+                      <button
+                        type="button"
+                        role="checkbox"
+                        aria-checked={on}
+                        disabled={toggleRitual.isPending}
+                        onClick={() => toggleRitual.mutate(r)}
+                        className={`flex w-40 items-start gap-2 rounded-2xl border-2 p-3 text-left ${on ? "border-success bg-success-soft" : "border-border bg-card"}`}
+                      >
+                        <span className={`mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border-2 ${on ? "border-success bg-success text-success-foreground" : "border-border"}`}>
+                          {on && <Check className="size-4" aria-hidden />}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold leading-tight">{ritualTitle(r, t)}</span>
+                          <span className="block text-xs text-muted-foreground">{isAnchor(r.anchor) ? t(`rituals.anchors.${r.anchor}`) : ""}</span>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
+          {isSunday && stats && <div className="mt-4"><WeeklySummary minutes={weekMinutes} /></div>}
 
           <div className="mt-4 space-y-4">
             {plan.map((activity) => (
@@ -248,11 +341,26 @@ function Today() {
                 onReact={(reaction) => mark.mutate({ activity, status: "done", reaction })}
                 onUndo={() => mark.mutate({ activity, status: null, reaction: null })}
                 onDiscuss={() => { void navigate({ to: "/assistant", search: { activity: activity.key } }); }}
+                weatherNote={weatherNote}
+                customInterest={profile.interests}
+                doneExtra={<MomentButton userId={user.id} day={today} activity={{ key: activity.key, title: activity.title }} consented={Boolean(profile.photo_consent_at)} />}
               />
             ))}
           </div>
         </>
       )}
     </AppShell>
+  );
+}
+
+function ProgressRing({ value }: { value: number }) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg viewBox="0 0 64 64" className="size-16 shrink-0 -rotate-90" aria-hidden>
+      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" className="stroke-muted" />
+      <circle cx="32" cy="32" r={r} fill="none" strokeWidth="8" strokeLinecap="round" className="stroke-success transition-all"
+        strokeDasharray={c} strokeDashoffset={c * (1 - Math.min(1, value))} />
+    </svg>
   );
 }

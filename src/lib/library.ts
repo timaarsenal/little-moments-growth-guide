@@ -11,6 +11,7 @@ export interface LibraryActivity {
   age_max_months: number;
   ru: LocalizedText;
   kz: LocalizedText;
+  outdoor?: boolean;
 }
 
 export const LIBRARY: LibraryActivity[] = raw.flatMap((a) =>
@@ -86,6 +87,7 @@ export function pickFromLibrary(
       duration_min: Math.min(best.duration_min, slot.max_minutes),
       window: slot.window,
       start_time: slot.start_time,
+      ...(best.outdoor ? { outdoor: true } : {}),
       ru: best.ru,
       kz: best.kz,
     });

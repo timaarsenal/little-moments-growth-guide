@@ -2,7 +2,9 @@ import { z } from "zod";
 
 import { pickFromLibrary } from "./library";
 import { MAX_ACTIVITY, MIN_ACTIVITY, type Slot } from "./schedule";
-import { CATEGORIES, type Category, type DayPlan, type LogLite, type PlanItem } from "./types";
+import { CATEGORIES, INTEREST_TAGS, type Category, type DayPlan, type LogLite, type PlanItem } from "./types";
+
+const INTEREST_VALUES = [...INTEREST_TAGS, "custom"] as const;
 
 /** Strict JSON schema the model must follow: one activity per slot, text in both RU and KZ. */
 const textSchema = {
@@ -27,11 +29,23 @@ export const AI_PLAN_SCHEMA = {
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["slot", "category", "duration_min", "ru", "kz"],
+        required: ["slot", "category", "duration_min", "outdoor", "is_kazakh", "kazakh_words", "interests", "ru", "kz"],
         properties: {
           slot: { type: "integer" },
           category: { type: "string", enum: [...CATEGORIES] },
           duration_min: { type: "integer" },
+          outdoor: { type: "boolean" },
+          is_kazakh: { type: "boolean" },
+          kazakh_words: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              required: ["kz", "ru"],
+              properties: { kz: { type: "string" }, ru: { type: "string" } },
+            },
+          },
+          interests: { type: "array", items: { type: "string", enum: [...INTEREST_VALUES] } },
           ru: textSchema,
           kz: textSchema,
         },
@@ -53,11 +67,26 @@ const aiResponse = z.object({
       slot: z.number().int(),
       category: z.enum(CATEGORIES),
       duration_min: z.number(),
+      outdoor: z.boolean().default(false),
+      is_kazakh: z.boolean().default(false),
+      kazakh_words: z.array(z.object({ kz: z.string().trim().min(1).max(60), ru: z.string().trim().min(1).max(60) })).max(10).default([]),
+      interests: z.array(z.enum(INTEREST_VALUES)).max(9).default([]),
       ru: text,
       kz: text,
     }),
   ),
 });
+
+/** Child preferences the planner must honour. */
+export interface PlanPrefs {
+  interests: string[];
+  customInterest: string;
+  bilingual: boolean;
+  weather: string | null;
+}
+export const NO_PREFS: PlanPrefs = { interests: [], customInterest: "", bilingual: false, weather: null };
+/** A bilingual family gets at most this many Kazakh activities a day. */
+export const MAX_KAZAKH = 2;
 
 export interface HistorySummary {
   byCategory: Record<Category, { done: number; skipped: number; liked: number; disliked: number }>;
@@ -107,12 +136,19 @@ Rules:
 - Safety: an adult always supervises; no small objects that a child under 3 could choke on (no beads, buttons, coins, uncooked beans, small balloons); no screens; no food the child could choke on; no medical advice.
 - Materials: common household items only; use an empty list when nothing is needed.
 - why: one short sentence on what skill it develops. steps: 3–5 short, concrete steps for the parent.
+- Interests: when the child has interests, build EVERY activity you can around them (e.g. count toy cars, sort animals by size, sing about the ball) and list the interests you used in "interests" ("custom" for the parent's own text). Use an empty list only when no interest fits.
+- Bilingual: when bilingual is true, make 1–2 activities (never more) Kazakh-language activities (is_kazakh=true): new Kazakh words on the day's theme, a short тақпақ, or a Kazakh folk game (e.g. «Ақ серек, көк серек», «Соқыр теке», «Орамал тастау»). List 2–5 taught words in kazakh_words with a Russian translation. In the "ru" text write each Kazakh word with its translation in brackets, e.g. «алма (яблоко)». In the "kz" text keep the Kazakh words as they are. Otherwise is_kazakh=false and kazakh_words=[].
+- outdoor=true only for activities that happen outside (walks, playground). When weather_today says play must stay home, plan NO outdoor activities.
 - Write every text twice: "ru" in natural Russian and "kz" in natural Kazakh (Cyrillic). Same activity, same meaning in both.`;
 
 /** User message with everything the model needs. The child's name is never sent. */
-export function buildAiInput(ageMonths: number, slots: Slot[], history: LogLite[], weekend: boolean): string {
+export function buildAiInput(ageMonths: number, slots: Slot[], history: LogLite[], weekend: boolean, prefs: PlanPrefs = NO_PREFS): string {
   return JSON.stringify({
     child_age_months: ageMonths,
+    child_interests: prefs.interests,
+    child_interests_custom: prefs.customInterest || null,
+    bilingual: prefs.bilingual,
+    weather_today: prefs.weather ?? "fine for a walk",
     day: weekend ? "weekend" : "weekday",
     slots: slots.map((s) => ({
       slot: s.index,
@@ -128,7 +164,7 @@ export function buildAiInput(ageMonths: number, slots: Slot[], history: LogLite[
  * Validate the model's JSON against the slots. Returns valid items keyed by slot (duration clamped to the slot,
  * repeated categories and unknown slots dropped), or null when the payload is unusable.
  */
-export function parseAiPlan(raw: string, slots: Slot[], today: string): Map<number, PlanItem> | null {
+export function parseAiPlan(raw: string, slots: Slot[], today: string, prefs: PlanPrefs = NO_PREFS): Map<number, PlanItem> | null {
   let json: unknown;
   try {
     json = JSON.parse(raw);
@@ -141,13 +177,15 @@ export function parseAiPlan(raw: string, slots: Slot[], today: string): Map<numb
   const bySlot = new Map(slots.map((s) => [s.index, s]));
   const usedCats = new Set<Category>();
   const out = new Map<number, PlanItem>();
+  const allowed = new Set<string>([...prefs.interests, ...(prefs.customInterest ? ["custom"] : [])]);
+  let kazakhCount = 0;
   for (const a of parsed.data.activities) {
     const slot = bySlot.get(a.slot);
     if (!slot || out.has(slot.index)) continue;
     if (slots.length <= CATEGORIES.length && usedCats.has(a.category)) continue;
     usedCats.add(a.category);
     const duration = Math.round(Math.min(slot.max_minutes, MAX_ACTIVITY, Math.max(MIN_ACTIVITY, a.duration_min)));
-    out.set(slot.index, {
+    const item: PlanItem = {
       key: `ai:${today}:${slot.index}`,
       category: a.category,
       duration_min: duration,
@@ -155,7 +193,16 @@ export function parseAiPlan(raw: string, slots: Slot[], today: string): Map<numb
       start_time: slot.start_time,
       ru: a.ru,
       kz: a.kz,
-    });
+    };
+    if (a.outdoor) item.outdoor = true;
+    if (prefs.bilingual && a.is_kazakh && kazakhCount < MAX_KAZAKH) {
+      kazakhCount += 1;
+      item.kazakh = true;
+      if (a.kazakh_words.length) item.kz_words = a.kazakh_words;
+    }
+    const used = [...new Set(a.interests.filter((i) => allowed.has(i)))];
+    if (used.length) item.interests = used;
+    out.set(slot.index, item);
   }
   return out.size ? out : null;
 }
@@ -187,6 +234,10 @@ const planItem = z.object({
   duration_min: z.number(),
   window: z.enum(["morning", "evening", "weekend"]),
   start_time: z.string(),
+  outdoor: z.boolean().optional(),
+  kazakh: z.boolean().optional(),
+  kz_words: z.array(z.object({ kz: z.string(), ru: z.string() })).optional(),
+  interests: z.array(z.string()).optional(),
   ru: text,
   kz: text,
 });
@@ -195,5 +246,12 @@ const planItem = z.object({
 export function readStoredPlan(source: string, activities: unknown): DayPlan | null {
   const parsed = z.array(planItem).safeParse(activities);
   if (!parsed.success || parsed.data.length === 0) return null;
-  return { source: source === "ai" ? "ai" : "library", items: parsed.data };
+  const items: PlanItem[] = parsed.data.map(({ outdoor, kazakh, kz_words, interests, ...rest }) => ({
+    ...rest,
+    ...(outdoor ? { outdoor } : {}),
+    ...(kazakh ? { kazakh } : {}),
+    ...(kz_words?.length ? { kz_words } : {}),
+    ...(interests?.length ? { interests } : {}),
+  }));
+  return { source: source === "ai" ? "ai" : "library", items };
 }

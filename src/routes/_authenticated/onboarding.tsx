@@ -13,6 +13,8 @@ import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
 import { profileQuery } from "@/lib/profile";
+import { replanToday } from "@/lib/replan";
+import { INTEREST_TAGS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
@@ -55,6 +57,7 @@ function Onboarding() {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(existing?.child_name ?? "");
   const [interests, setInterests] = useState(existing?.interests ?? "");
+  const [tags, setTags] = useState<string[]>(existing?.interest_tags ?? []);
   const [birth, setBirth] = useState(existing?.birth_date ?? "");
   const [wake, setWake] = useState(hhmm(existing?.wake_time ?? "07:00"));
   const [napStart, setNapStart] = useState(hhmm(existing?.nap_start ?? "13:00"));
@@ -84,6 +87,7 @@ function Onboarding() {
           user_id: auth.user.id,
           child_name: name.trim(),
           interests: interests.trim(),
+          interest_tags: INTEREST_TAGS.filter((tag) => tags.includes(tag)),
           birth_date: birth,
           wake_time: wake,
           nap_start: napStart,
@@ -96,10 +100,8 @@ function Onboarding() {
         { onConflict: "user_id" },
       );
       if (dbError) throw dbError;
-      // The schedule may have changed: drop today's stored plan so it is picked again.
-      const { error: planError } = await supabase.from("daily_plans").delete().eq("user_id", auth.user.id).eq("plan_date", localTodayISO());
-      if (planError) throw planError;
-      queryClient.removeQueries({ queryKey: ["plan"] });
+      // The schedule or interests may have changed: pick today's plan again.
+      await replanToday(auth.user.id, queryClient);
       await queryClient.invalidateQueries({ queryKey: profileQuery.queryKey });
       toast.success(t("onboarding.saved"));
       await navigate({ to: "/today" });
@@ -142,10 +144,30 @@ function Onboarding() {
                 className={inputClass}
               />
             </Field>
-            <Field id="child-interests" label={t("onboarding.interests")}>
-              <Input id="child-interests" value={interests} onChange={(e) => setInterests(e.target.value)} maxLength={500} placeholder={t("onboarding.interestsPlaceholder")} className={inputClass} />
-              <p className="text-sm text-muted-foreground">{t("onboarding.interestsHint")}</p>
-            </Field>
+            <fieldset className="space-y-2">
+              <legend className="text-base font-bold">{t("onboarding.interests")}</legend>
+              <div className="flex flex-wrap gap-2">
+                {INTEREST_TAGS.map((tag) => {
+                  const on = tags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => setTags((cur) => (on ? cur.filter((x) => x !== tag) : [...cur, tag]))}
+                      className={cn(
+                        "rounded-full border-2 px-4 py-2 font-bold transition-colors",
+                        on ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-muted-foreground",
+                      )}
+                    >
+                      {t(`interests.${tag}`)}
+                    </button>
+                  );
+                })}
+              </div>
+              <Label htmlFor="child-interests" className="pt-2 text-sm font-bold text-muted-foreground">{t("interests.other")}</Label>
+              <Input id="child-interests" value={interests} onChange={(e) => setInterests(e.target.value)} maxLength={200} placeholder={t("interests.otherPlaceholder")} className={inputClass} />
+            </fieldset>
             <Field id="birth" label={t("onboarding.birthDate")}>
               <Input
                 id="birth"

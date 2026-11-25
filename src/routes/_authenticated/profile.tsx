@@ -1,14 +1,20 @@
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut, Pencil } from "lucide-react";
+import { Images, LogOut, Pencil, Repeat } from "lucide-react";
 
 import { AppShell } from "@/components/balapan/AppShell";
 import { LangSwitch } from "@/components/balapan/LangSwitch";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, hhmm, localTodayISO } from "@/lib/age";
 import { profileQuery } from "@/lib/profile";
+import { replanToday } from "@/lib/replan";
+import { CITIES, DEFAULT_CITY, isCity, type CityKey } from "@/lib/weather";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -40,6 +46,18 @@ function Profile() {
   const queryClient = useQueryClient();
   const { data: profile } = useSuspenseQuery(profileQuery);
   const { user } = Route.useRouteContext();
+  const update = useMutation({
+    mutationFn: async (patch: { bilingual?: boolean; city?: string }) => {
+      const { error } = await supabase.from("child_profiles").update(patch).eq("user_id", user.id);
+      if (error) throw error;
+      await replanToday(user.id, queryClient);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: profileQuery.queryKey });
+      toast.success(t("profileX.saved"));
+    },
+    onError: (err) => toast.error(t("common.error", { message: err instanceof Error ? err.message : String(err) })),
+  });
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -65,8 +83,41 @@ function Profile() {
               {age(ageInMonths(profile.birth_date, localTodayISO()))}
             </p>
             <h3 className="mt-4 text-sm font-bold text-muted-foreground">{t("profile.interests")}</h3>
-            <p className="mt-1 break-words font-semibold">{profile.interests || t("profile.noInterests")}</p>
+            {profile.interest_tags.length || profile.interests ? (
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {profile.interest_tags.map((tag) => (
+                  <li key={tag} className="rounded-full bg-primary-soft px-3 py-1 text-sm font-bold text-primary">{t(`interests.${tag}`)}</li>
+                ))}
+                {profile.interests && <li className="break-words rounded-full bg-muted px-3 py-1 text-sm font-bold">{profile.interests}</li>}
+              </ul>
+            ) : (
+              <p className="mt-1 font-semibold">{t("profile.noInterests")}</p>
+            )}
           </section>
+
+          <section className="mt-4 space-y-4 rounded-3xl bg-card p-5 shadow-soft">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <Label htmlFor="bilingual" className="text-base font-bold">{t("kazakh.setting")}</Label>
+                <p className="mt-1 text-sm text-muted-foreground">{t("kazakh.settingHint")}</p>
+              </div>
+              <Switch id="bilingual" checked={profile.bilingual} disabled={update.isPending} onCheckedChange={(v) => update.mutate({ bilingual: v })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="city" className="text-base font-bold">{t("profileX.city")}</Label>
+              <Select value={isCity(profile.city) ? profile.city : DEFAULT_CITY} onValueChange={(v) => update.mutate({ city: v })} disabled={update.isPending}>
+                <SelectTrigger id="city" className="h-12 rounded-2xl text-base"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(CITIES) as CityKey[]).map((c) => <SelectItem key={c} value={c}>{t(`cities.${c}`)}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </section>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <Button asChild variant="soft" size="lg"><Link to="/rituals"><Repeat aria-hidden />{t("profileX.rituals")}</Link></Button>
+            <Button asChild variant="soft" size="lg"><Link to="/moments"><Images aria-hidden />{t("profileX.moments")}</Link></Button>
+          </div>
 
           <section className="mt-4 rounded-3xl bg-card p-5 shadow-soft">
             <h2 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">

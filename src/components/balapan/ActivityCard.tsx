@@ -1,5 +1,5 @@
 import { ChevronDown, Clock, MessageCircleHeart, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
@@ -22,10 +22,16 @@ interface Props {
   onReact: (reaction: Reaction) => void;
   onUndo: () => void;
   onDiscuss: () => void;
+  /** "Today −25 °C — we play at home" when the activity was moved indoors. */
+  weatherNote?: string | undefined;
+  /** The parent's own interest text, for the "custom" interest badge. */
+  customInterest?: string;
+  /** Extra controls shown after "Done" (e.g. save a moment). */
+  doneExtra?: ReactNode;
 }
 
-export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss }: Props) {
-  const { t } = useI18n();
+export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss, weatherNote, doneExtra, customInterest }: Props) {
+  const { t, lang } = useI18n();
   const [open, setOpen] = useState(false);
   const style = CATEGORY_STYLE[activity.category];
   const status = log?.status;
@@ -52,6 +58,17 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         {t(`windows.${activity.window}`)} · {activity.start_time}
       </p>
       <h2 className="mt-1 text-xl font-bold leading-snug">{activity.title}</h2>
+      {(activity.kazakh || activity.interests?.length || (activity.movedIndoors && weatherNote)) && (
+        <div className="mt-2 flex flex-wrap gap-2 text-xs font-bold">
+          {activity.kazakh && <span className="rounded-full bg-accent px-2.5 py-1 text-accent-foreground">{t("kazakh.badge")}</span>}
+          {activity.interests?.length ? (
+            <span className="rounded-full bg-primary-soft px-2.5 py-1 text-primary">
+              {t("interestBadge", { list: activity.interests.map((i) => (i === "custom" ? customInterest || t("interests.other") : t(`interests.${i}`)).toLowerCase()).join(", ") })}
+            </span>
+          ) : null}
+          {activity.movedIndoors && weatherNote && <span className="rounded-full bg-muted px-2.5 py-1 text-foreground">{weatherNote}</span>}
+        </div>
+      )}
       <p className="mt-2 text-muted-foreground">
         <span className="font-bold text-foreground">{t("today.why")}: </span>
         {activity.why}
@@ -71,6 +88,16 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
 
       {open && (
         <div className="mt-3 space-y-4 rounded-2xl bg-muted p-4">
+          {activity.kz_words?.length ? (
+            <div>
+              <h3 className="font-sans text-sm font-extrabold uppercase tracking-wide text-muted-foreground">{t("kazakh.newWords")}</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {activity.kz_words.map((w) => (
+                  <li key={w.kz} className="rounded-full bg-card px-3 py-1 text-sm"><b>{w.kz}</b>{lang === "ru" ? ` — ${w.ru}` : ""}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div>
             <h3 className="font-sans text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
               {t("today.steps")}
@@ -145,10 +172,13 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
               ))}
             </div>
             {log?.reaction && <p className="mt-3 text-sm font-semibold text-secondary-foreground">{t("today.thanks")}</p>}
-            <Button variant="ghost" size="sm" className="mt-2" disabled={busy} onClick={onUndo}>
-              <RotateCcw aria-hidden />
-              {t("today.undo")}
-            </Button>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {doneExtra}
+              <Button variant="ghost" size="sm" disabled={busy} onClick={onUndo}>
+                <RotateCcw aria-hidden />
+                {t("today.undo")}
+              </Button>
+            </div>
           </div>
         )}
 
