@@ -1,14 +1,62 @@
-# Welcome to your Lovable project
+# Little Moments Growth Guide
+
+Создай мобильное веб-приложение «Balapan» — ИИ-помощник для занятых родителей детей 1–3 лет. Оно подбирает короткие развивающие занятия под возраст ребёнка и свободное время родителей.
+
+ЯЗЫКИ: русский и казахский, переключатель RU/KZ в шапке. Все тексты интерфейса храни в отдельных файлах переводов (ru.json, kz.json).
+
+ДИЗАЙН: mobile-first, тёплые мягкие цвета, крупные кнопки, дружелюбный стиль, иконки для категорий.
+
+1. ОНБОРДИНГ (при первом входе):
+
+- имя ребёнка, дата рождения (возраст считается в месяцах)
+
+- время подъёма, дневного сна, отбоя
+
+- свободные окна родителей: утро / вечер / выходные, сколько минут в каждом
+
+Сохраняй профиль в базу данных.
+
+2. ЭКРАН «СЕГОДНЯ»:
+
+- приветствие и возраст ребёнка
+
+- 3–4 карточки занятий, расставленные по свободным окнам родителей и не попадающие на сон
+
+- категории: Речь, Крупная моторика / прогулка, Мелкая моторика, Творчество и сенсорика, Эмоции и общение
+
+- в карточке: название, время (5–30 мин), зачем это нужно (1 предложение), пошаговая инструкция, нужные материалы
+
+- кнопки «Сделали ✅» и «Пропустить», после «Сделали» — выбор реакции ребёнка: 😊 понравилось / 😐 нормально / 😟 не понравилось
+
+3. ИИ-ПОДБОР ЗАНЯТИЙ:
+
+- используй ИИ, чтобы генерировать занятия с учётом возраста в месяцах, свободного времени и прошлых отметок (больше того, что понравилось, разнообразие категорий)
+
+- ответ ИИ — в структурированном JSON, на выбранном языке
+
+- если ИИ недоступен, бери занятия из встроенной библиотеки: создай файл data/activities.json с 20 занятиями для детей 24–36 месяцев, по 4 на каждую категорию
+
+4. ЭКРАН «ПРОГРЕСС»:
+
+- сколько занятий сделано за неделю, по категориям (простая диаграмма)
+
+- чек-лист этапов развития для возраста ребёнка, хранить в data/milestones.json с полем source для каждого пункта (источник: рекомендации CDC «Learn the Signs. Act Early»)
+
+5. ВНИЗУ ВСЕХ ЭКРАНОВ мелким текстом: «Приложение не заменяет консультацию педиатра».
+
+Нижнее меню: Сегодня / Прогресс / Профиль.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://little-moments-growth-guide.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/66b208fa-15d2-4356-80ce-6c6caf737420).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +68,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
