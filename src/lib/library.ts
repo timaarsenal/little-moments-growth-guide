@@ -1,7 +1,7 @@
 import raw from "@/data/activities.json";
 
 import type { Slot } from "./schedule";
-import { isCategory, type Category, type LocalizedText, type LogLite, type PlanItem } from "./types";
+import { isCategory, type Category, type LocalizedText, type LogLite, type PlanItem, type PlannedActivity } from "./types";
 
 export interface LibraryActivity {
   id: string;
@@ -97,19 +97,43 @@ export function pickFromLibrary(
   return result;
 }
 
-const PLACE_WORDS: Record<string, string[]> = {
-  home: ["игрушк", "кубик", "подушк", "книж", "мяч"],
-  kitchen: ["кастрюл", "ложк", "крупа", "миск", "продукт", "фрукт", "овощ", "стакан", "кухн"],
-  car: ["песен", "песн", "стих", "назов", "окно", "пальч"],
-  bath: ["вод", "ванн", "губк", "пен", "плава"],
-};
+import quickRaw from "@/data/quick-activities.json";
 
-/** Up to 2 short indoor library activities for the child's age that suit where the parent is now. */
-export function quickIdeas(place: string, months: number): LibraryActivity[] {
-  const words = PLACE_WORDS[place] ?? [];
-  const pool = LIBRARY.filter((a) => !a.outdoor && a.duration_min <= 15 && months >= a.age_min_months - 6 && months <= a.age_max_months)
-    .sort((a, b) => a.duration_min - b.duration_min);
-  const text = (a: LibraryActivity) => [a.ru.title, ...a.ru.steps, ...a.ru.materials].join(" ").toLowerCase();
-  const matched = pool.filter((a) => words.some((w) => text(a).includes(w)));
-  return [...matched, ...pool.filter((a) => !matched.includes(a))].slice(0, 2);
+export interface QuickActivity extends LibraryActivity {
+  place: string;
+  supervised?: boolean;
+}
+
+export const QUICK_LIBRARY: QuickActivity[] = quickRaw.flatMap((a) =>
+  isCategory(a.category) ? [{ ...a, category: a.category }] : [],
+);
+
+/** Grains, small objects and water need an adult watching. */
+const SUPERVISION_WORDS = ["круп", "греч", "рис", "фасол", "горох", "макарон", "бусин", "пуговиц", "мелк", "вод", "ванн", "бассейн"];
+export function needsSupervision(text: LocalizedText): boolean {
+  const all = [text.title, ...text.steps, ...text.materials].join(" ").toLowerCase();
+  return SUPERVISION_WORDS.some((w) => all.includes(w));
+}
+
+/** Up to 4 activities of 2–5 minutes, made strictly for this place and the child's age. */
+export function quickIdeas(place: string, months: number): QuickActivity[] {
+  return QUICK_LIBRARY.filter((a) => a.place === place && months >= a.age_min_months && months <= a.age_max_months)
+    .sort((a, b) => a.duration_min - b.duration_min)
+    .slice(0, 4);
+}
+
+export function quickToPlanned(a: QuickActivity, lang: "ru" | "kz"): PlannedActivity {
+  const text = a[lang];
+  return {
+    key: `quick:${a.id}`,
+    category: a.category,
+    duration_min: a.duration_min,
+    window: "morning",
+    start_time: "",
+    title: text.title,
+    why: text.why,
+    steps: text.steps,
+    materials: text.materials,
+    ...(a.supervised || needsSupervision(a.ru) ? { supervised: true } : {}),
+  };
 }

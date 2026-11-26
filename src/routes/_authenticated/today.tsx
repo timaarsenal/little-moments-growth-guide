@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { formatShortDate, useI18n } from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { ageInMonths, localTodayISO } from "@/lib/age";
-import { pickFromLibrary, quickIdeas } from "@/lib/library";
+import { pickFromLibrary, quickIdeas, quickToPlanned } from "@/lib/library";
 import { ensureKazakh } from "@/lib/kazakh-fallback";
 import { logsQuery } from "@/lib/logs";
 import { getTodayPlan } from "@/lib/plan.functions";
@@ -359,14 +359,26 @@ function Today() {
           ))}
         </div>
         {place && (
-          <ul className="mt-3 space-y-2">
-            {quickIdeas(place, months).map((a) => (
-              <li key={a.id} className="rounded-2xl bg-card p-3 text-sm">
-                <p className="font-extrabold">{a[lang].title} · {t("common.minutes", { n: a.duration_min })}</p>
-                <p className="mt-1 text-muted-foreground">{a[lang].steps[0]}</p>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-3 space-y-3">
+            <p className="text-sm font-semibold text-warm-foreground">{t("quick.hint")}</p>
+            {quickIdeas(place, months).map((q) => {
+              const activity = quickToPlanned(q, lang);
+              return (
+                <ActivityCard
+                  key={activity.key}
+                  quick
+                  activity={activity}
+                  log={todayLogs.get(activity.key)}
+                  busy={mark.isPending && mark.variables?.activity.key === activity.key}
+                  onDone={() => mark.mutate({ activity, status: "done", reaction: null })}
+                  onSkip={() => mark.mutate({ activity, status: "skipped", reaction: null })}
+                  onReact={(reaction) => mark.mutate({ activity, status: "done", reaction })}
+                  onUndo={() => mark.mutate({ activity, status: null, reaction: null })}
+                  onDiscuss={() => { void navigate({ to: "/assistant", search: { activity: activity.key } }); }}
+                />
+              );
+            })}
+          </div>
         )}
       </section>
 

@@ -26,6 +26,8 @@ export interface PlannedActivity {
   interests?: string[];
   /** Set when an outdoor activity was swapped for a home game because of the weather. */
   movedIndoors?: boolean;
+  /** Grains, small objects or water: show "only with an adult". */
+  supervised?: boolean;
 }
 
 export interface LogLite {
@@ -107,5 +109,8 @@ export function localize(item: PlanItem, lang: Lang): PlannedActivity {
     ...(item.kz_words?.length ? { kz_words: item.kz_words } : {}),
     ...(item.interests?.length ? { interests: item.interests } : {}),
     ...(item.movedIndoors ? { movedIndoors: true } : {}),
+    ...(SUPERVISE_RE.test([item.ru.title, ...item.ru.steps, ...item.ru.materials].join(" ")) ? { supervised: true } : {}),
   };
 }
+
+const SUPERVISE_RE = /круп|греч|рис[ау ]|фасол|горох|макарон|бусин|пуговиц|мелк|вод[аыуе]|водич|ванн|бассейн/i;

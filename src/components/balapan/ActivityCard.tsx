@@ -1,4 +1,4 @@
-import { ChevronDown, Clock, MessageCircleHeart, RotateCcw } from "lucide-react";
+import { ChevronDown, Clock, MessageCircleHeart, RotateCcw, ShieldAlert } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,13 @@ interface Props {
   doneExtra?: ReactNode;
   /** The next activity to do: shown larger with a wide picture. */
   next?: boolean;
+  /** Quick "5 minutes" card: steps open, no time or window. */
+  quick?: boolean;
 }
 
-export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss, weatherNote, doneExtra, customInterest, next = false }: Props) {
+export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onUndo, onDiscuss, weatherNote, doneExtra, customInterest, next = false, quick = false }: Props) {
   const { t, lang } = useI18n();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(quick);
   const style = CATEGORY_STYLE[activity.category];
   const status = log?.status;
 
@@ -58,7 +60,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
         {!next && <CategoryArt activity={activity} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-muted-foreground">
-            {!next && <span>{activity.start_time}</span>}
+            {!next && !quick && <span>{activity.start_time}</span>}
             <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5", style.chip)}>
               <style.Icon className="size-3.5" aria-hidden />
               {t(`categories.${activity.category}`)}
@@ -68,7 +70,7 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
               {t("today.min", { n: activity.duration_min })}
             </span>
           </div>
-          <p className="mt-1 text-xs font-bold text-muted-foreground">{t(`windows.${activity.window}`)}</p>
+          {!quick && <p className="mt-1 text-xs font-bold text-muted-foreground">{t(`windows.${activity.window}`)}</p>}
           <h2 className={cn("mt-1 font-extrabold leading-snug", next ? "text-xl" : "text-lg", status === "done" && "line-through decoration-2 opacity-70")}>{activity.title}</h2>
         </div>
       </div>
@@ -82,6 +84,12 @@ export function ActivityCard({ activity, log, busy, onDone, onSkip, onReact, onU
           ) : null}
           {activity.movedIndoors && weatherNote && <span className="rounded-full bg-muted px-2.5 py-1 text-foreground">{weatherNote}</span>}
         </div>
+      )}
+      {activity.supervised && (
+        <p className="mt-2 flex items-center gap-2 rounded-2xl bg-warm-soft px-3 py-2 text-sm font-extrabold text-warm-foreground">
+          <ShieldAlert className="size-4 shrink-0" aria-hidden />
+          {t("today.supervised")}
+        </p>
       )}
       <p className="mt-2 text-muted-foreground">
         <span className="font-bold text-foreground">{t("today.why")}: </span>
